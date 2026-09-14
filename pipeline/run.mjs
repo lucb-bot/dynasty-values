@@ -289,6 +289,20 @@ async function main() {
         const d365 = changeOver(long.dates, row, 365);
         if (d90) { a.delta90 = d90.delta; a.pct90 = Number(d90.pct?.toFixed(4)); }
         if (d365) { a.delta365 = d365.delta; a.pct365 = Number(d365.pct?.toFixed(4)); }
+
+        // The archive is weekly, so it also gives a real 30-day number. Prefer
+        // it over FantasyCalc's own trend field, which measures a different
+        // thing from the blend shown everywhere else on the page. Our nightly
+        // snapshots still win once they are deep enough, since they track the
+        // blend exactly.
+        if (!a.trendBasis30 || a.trendBasis30 === 'fantasycalc30d') {
+          const d30 = changeOver(long.dates, row, 30);
+          if (d30) {
+            a.delta30 = d30.delta;
+            a.pct30 = Number(d30.pct?.toFixed(4));
+            a.trendBasis30 = `archive:${d30.days}d`;
+          }
+        }
         if (d90 || d365) covered++;
       }
       console.log(`  [history] ${covered} assets carry long-horizon trend`);
