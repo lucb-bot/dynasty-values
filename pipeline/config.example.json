@@ -1,0 +1,10 @@
+{
+  "workerUrl": "https://dynasty-values.YOUR-SUBDOMAIN.workers.dev",
+  "ingestToken": "paste-the-same-secret-you-set-with-wrangler-secret-put-INGEST_TOKEN",
+
+  "_comment_formats": "Which league shapes to publish boards for. '*' expands: teams to 8/10/12/14/16, ppr to 0/0.5/1, qb to 1qb/sf. The default covers every common league, which is what you want if anyone but you will use the site. Narrow it to just your own leagues if you'd rather the nightly run be quick.",
+  "formats": ["*-*tm-*ppr"],
+
+  "_comment_weights": "How much each source counts. Equal by default. Raise one you trust more.",
+  "weights": { "ktc": 1, "fantasycalc": 1, "dynastyprocess": 1 }
+}

@@ -1,0 +1,10 @@
+node_modules/
+.devdata/db_playerids.csv
+.dryrun-*.json
+pipeline/config.json
+.wrangler/
+
+# local setup file - never commit
+SETUP*.txt
+dynasty-values.zip
+.ingest-token

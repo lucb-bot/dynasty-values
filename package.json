@@ -1,0 +1,18 @@
+{
+  "name": "dynasty-values",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private dynasty fantasy value blender + trade calculator, wired to a Sleeper league.",
+  "scripts": {
+    "pipeline": "node pipeline/run.mjs",
+    "pipeline:dry": "node pipeline/run.mjs --dry-run",
+    "test": "node --test test/*.test.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "engines": { "node": ">=20" }
+}

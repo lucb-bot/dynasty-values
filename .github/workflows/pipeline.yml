@@ -1,0 +1,54 @@
+# Nightly value refresh.
+#
+# Fetches FantasyCalc and DynastyProcess, scrapes KeepTradeCut, blends
+# everything, and publishes the boards to the Worker's KV store.
+#
+# Runs on GitHub's servers, so your Mac does not need to be awake. The 30-day
+# trend history is kept in the repo (see the commit step) because GitHub
+# runners are wiped between runs and have nowhere else to keep it.
+name: Refresh values
+
+on:
+  schedule:
+    # 09:20 UTC = 5:20am Eastern. Off-the-hour on purpose: scheduled jobs
+    # queued exactly on the hour get delayed by GitHub's own load.
+    - cron: '20 9 * * *'
+  workflow_dispatch:
+    inputs:
+      skip_ktc:
+        description: 'Skip the KeepTradeCut collector'
+        type: boolean
+        default: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Run the pipeline
+        run: node pipeline/run.mjs ${{ inputs.skip_ktc && '--no-ktc' || '' }}
+        env:
+          WORKER_URL: ${{ secrets.WORKER_URL }}
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+
+      - name: Save trend history
+        run: |
+          if [ -n "$(git status --porcelain .history)" ]; then
+            git config user.name  "dynasty-values bot"
+            git config user.email "noreply@github.com"
+            git add .history
+            git commit -m "history: $(date -u +%Y-%m-%d) board snapshot"
+            git push
+          else
+            echo "no history change"
+          fi

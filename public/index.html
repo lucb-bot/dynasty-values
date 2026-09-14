@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynasty Value Blender</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<div id="setup" class="setup" hidden>
+  <div class="card">
+    <h2>Connect your league</h2>
+    <p class="faint">Read-only. Sleeper's API needs no password &mdash; just your username.</p>
+    <label for="username">Sleeper username</label>
+    <input type="text" id="username" placeholder="your sleeper handle" autocomplete="username">
+    <p style="margin:14px 0 0"><button class="btn" id="find-leagues">Find my leagues</button></p>
+    <div id="setup-error" class="notice" hidden></div>
+    <ul class="leagues" id="league-list"></ul>
+  </div>
+</div>
+
+<div id="app" class="wrap" hidden>
+  <header class="top">
+    <h1>Dynasty Value Blender</h1>
+    <span class="league-chip" id="league-chip"></span>
+    <button class="link-btn" id="switch-league">use a different Sleeper account</button>
+  </header>
+
+  <div id="global-notice" class="notice" hidden></div>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-view="roster" aria-selected="true">My roster</button>
+    <button role="tab" data-view="trade" aria-selected="false">Trade calculator</button>
+    <button role="tab" data-view="league" aria-selected="false">Power rankings</button>
+    <button role="tab" data-view="movers" aria-selected="false">Movers &amp; disagreement</button>
+    <button role="tab" data-view="board" aria-selected="false">Full board</button>
+  </nav>
+
+  <main id="view"><div class="spinner">Loading&hellip;</div></main>
+
+  <footer class="meta" id="footer-meta"></footer>
+</div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Nightly pipeline on the Mac mini.
+
+  Install:
+    cp scripts/com.dynastyvalues.pipeline.plist ~/Library/LaunchAgents/
+    # edit the two paths below to match where you cloned the repo
+    launchctl load ~/Library/LaunchAgents/com.dynastyvalues.pipeline.plist
+
+  Check it:
+    launchctl list | grep dynastyvalues
+    tail -f /tmp/dynasty-pipeline.log
+
+  RunAtLoad also fires it once immediately, so you get a board without waiting
+  for 4am. If the mini is asleep at the scheduled time, StartCalendarInterval
+  runs the job when it next wakes.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.dynastyvalues.pipeline</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/node</string>
+    <string>/Users/CHANGE_ME/dynasty-values/pipeline/run.mjs</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/CHANGE_ME/dynasty-values</string>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key><integer>4</integer>
+    <key>Minute</key><integer>15</integer>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/tmp/dynasty-pipeline.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/dynasty-pipeline.err</string>
+</dict>
+</plist>
