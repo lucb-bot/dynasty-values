@@ -389,3 +389,31 @@ test('blending three assets from one source cannot inflate them to elite value',
     assert.ok(clean - dirty > 90, `${id}: ${clean} -> ${dirty}`);
   }
 });
+
+test('KTC extractor picks the real board, not the featured-player widget', async () => {
+  const { parseKtcHtml } = await import('../pipeline/ktc-scrape.mjs');
+  // Mirrors the real page: a small `playersArray` appears FIRST (a rotating
+  // featured widget), the full board appears later under the same name.
+  const featured = Array.from({ length: 3 }, (_, i) => ({
+    playerName: `Featured${i}`, playerID: 900 + i, position: 'QB',
+    oneQBValues: { value: 5000 }, superflexValues: { value: 5000 },
+  }));
+  const real = Array.from({ length: 480 }, (_, i) => ({
+    playerName: `Real${i}`, playerID: i, position: 'WR',
+    oneQBValues: { value: 9000 - i * 15 }, superflexValues: { value: 8800 - i * 14 },
+  }));
+  const html = `<html><script>var playersArray = ${JSON.stringify(featured)};</script>
+    <div>filler</div>
+    <script>var playersArray = ${JSON.stringify(real)};</script></html>`;
+
+  const { data, usedMarker } = parseKtcHtml(html);
+  assert.equal(data.length, 480, 'must take the full board, not the 3-player widget');
+  assert.equal(data[0].playerName, 'Real0');
+  assert.match(usedMarker, /playersArray @\d+ \(\d+ bytes\)/,
+    'the marker label should record which occurrence won, for diagnosis');
+
+  // And the order of the two arrays in the page must not matter.
+  const reversed = `<script>var playersArray = ${JSON.stringify(real)};</script>
+    <script>var playersArray = ${JSON.stringify(featured)};</script>`;
+  assert.equal(parseKtcHtml(reversed).data.length, 480);
+});

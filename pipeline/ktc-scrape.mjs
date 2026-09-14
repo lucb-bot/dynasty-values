@@ -20,11 +20,9 @@ const RANKINGS_URL = 'https://keeptradecut.com/dynasty-rankings';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
            '(KHTML, like Gecko) Chrome/125.0 Safari/537.36';
 
-/** Pull the first balanced JS array literal following a marker. */
-function extractArrayAfter(html, marker) {
-  const start = html.indexOf(marker);
-  if (start === -1) return null;
-  const open = html.indexOf('[', start);
+/** Pull one balanced JS array literal, starting the search at `from`. */
+function extractArrayAt(html, from) {
+  const open = html.indexOf('[', from);
   if (open === -1) return null;
   let depth = 0, inStr = null, esc = false;
   for (let i = open; i < html.length; i++) {
@@ -39,7 +37,7 @@ function extractArrayAfter(html, marker) {
     if (c === '[') depth++;
     else if (c === ']') {
       depth--;
-      if (depth === 0) return html.slice(open, i + 1);
+      if (depth === 0) return { text: html.slice(open, i + 1), end: i + 1 };
     }
   }
   return null;
@@ -47,18 +45,41 @@ function extractArrayAfter(html, marker) {
 
 const MARKERS = ['playersArray', 'var players =', 'window.playersArray', 'playerDataArray'];
 
-export function parseKtcHtml(html) {
-  let raw = null, usedMarker = null;
-  for (const m of MARKERS) {
-    raw = extractArrayAfter(html, m);
-    if (raw) { usedMarker = m; break; }
+/**
+ * Collect EVERY array literal following EVERY occurrence of a marker, and keep
+ * the largest.
+ *
+ * This matters: KTC's page declares `playersArray` more than once. The first
+ * occurrence is a three-player "featured" widget that rotates on each request.
+ * Taking the first match silently produced a three-asset board that looked like
+ * a working source. Size is the reliable discriminator - the real board is
+ * hundreds of players and everything else is a handful.
+ */
+function extractLargestArray(html) {
+  let best = null;
+  for (const marker of MARKERS) {
+    let idx = html.indexOf(marker);
+    while (idx !== -1) {
+      const found = extractArrayAt(html, idx);
+      if (found && (!best || found.text.length > best.text.length)) {
+        best = { ...found, marker, at: idx };
+      }
+      idx = html.indexOf(marker, idx + marker.length);
+    }
   }
-  if (!raw) {
+  return best;
+}
+
+export function parseKtcHtml(html) {
+  const best = extractLargestArray(html);
+  if (!best) {
     throw new Error(
       'Could not find the player array in KTC HTML. Their page structure likely changed. ' +
       'Markers tried: ' + MARKERS.join(', ')
     );
   }
+  const raw = best.text;
+  const usedMarker = `${best.marker} @${best.at} (${raw.length} bytes)`;
   let data;
   try {
     data = JSON.parse(raw);
