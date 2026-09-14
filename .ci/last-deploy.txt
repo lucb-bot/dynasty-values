@@ -1,4 +1,4 @@
-deploy: 2026-09-14T22:27:16Z
+deploy: 2026-09-14T22:31:37Z
 exit code: 0
 ---
 
@@ -7,8 +7,12 @@ exit code: 0
 🌀 Building list of assets...
 ✨ Read 14 files from the assets directory /home/runner/work/dynasty-values/dynasty-values/public
 🌀 Starting asset upload...
-No updated asset files to upload. Proceeding with deployment...
-Total Upload: 8.62 KiB / gzip: 2.98 KiB
+🌀 Found 1 new or modified static asset to upload. Proceeding with upload...
++ /app.js
+Uploaded 1 of 1 asset
+✨ Success! Uploaded 1 file (12 already uploaded) (0.80 sec)
+
+Total Upload: 8.84 KiB / gzip: 3.07 KiB
 Worker Startup Time: 5 ms
 Your Worker has access to the following bindings:
 Binding                                                          Resource                  
@@ -18,8 +22,8 @@ env.ASSETS                                                       Assets
 env.DEFAULT_LEAGUE_ID ("")                                       Environment Variable      
 env.DEFAULT_SLEEPER_USER ("")                                    Environment Variable      
 
-Uploaded dynasty-values (3.01 sec)
-Deployed dynasty-values triggers (0.57 sec)
+Uploaded dynasty-values (3.69 sec)
+Deployed dynasty-values triggers (0.44 sec)
   https://dynasty-values.lbiel0605.workers.dev
 Current Version ID: [redacted]
 
