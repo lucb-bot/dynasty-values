@@ -1,6 +1,164 @@
-run:       2026-09-14T21:42:23Z
+run:       2026-09-14T21:43:51Z
 exit code: 0
 ---
+[pipeline] 2026-09-14T21:43:16.452Z  v1.0.0
+[pipeline] 30 formats to publish
+[crosswalk] fetching db_playerids.csv ...
+[crosswalk] 6388 sleeper ids, 439 ktc ids
+[ktc] FAILED (1qb): KTC yielded only 3 usable 1QB assets from 3 parsed rows (minimum 50). Refusing to use a partial board.
+[ktc] diagnostics:
+  rows: 3
+  topLevelKeys: ["playerName(3)","playerID(3)","slug(3)","position(3)","positionID(3)","team(3)","rookie(3)","age(3)","heightFeet(3)","heightInches(3)","weight(3)","seasonsExperience(3)","pickRound(3)","pickNum(3)"]
+  sampleRow: {"playerName":"Dak Prescott","playerID":371,"slug":"dak-prescott-371","position":"QB","positionID":1,"team":"DAL","rookie":false,"age":33.1,"heightFeet":6,"heightInches":2,"weight":238,"seasonsExperience":10,"pickRound":4,"pickNum":37,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overal
+  valuePathHits: {"superflexValues.value":3,"oneQBValues.value":3,"sfValues.value":0,"qbValues.value":0,"value":0,"sfValue":0}
+  namePathHits: {"playerName":3,"name":0,"player":0}
+  htmlBytes: 2613219
+  usedMarker: playersArray
+  usableAssets: 3
+[ktc] continuing without KTC - the blend will use the remaining sources
+[ktc] FAILED (sf): KTC yielded only 3 usable superflex assets from 3 parsed rows (minimum 50). Refusing to use a partial board.
+[ktc] diagnostics:
+  rows: 3
+  topLevelKeys: ["playerName(3)","playerID(3)","slug(3)","position(3)","positionID(3)","team(3)","rookie(3)","age(3)","heightFeet(3)","heightInches(3)","weight(3)","seasonsExperience(3)","pickRound(3)","pickNum(3)"]
+  sampleRow: {"playerName":"Chigoziem Okonkwo","playerID":1320,"slug":"chigoziem-okonkwo-1320","position":"TE","positionID":4,"team":"WAS","rookie":false,"age":27,"heightFeet":6,"heightInches":3,"weight":238,"seasonsExperience":4,"pickRound":4,"pickNum":38,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":
+  valuePathHits: {"superflexValues.value":3,"oneQBValues.value":3,"sfValues.value":0,"qbValues.value":0,"value":0,"sfValue":0}
+  namePathHits: {"playerName":3,"name":0,"player":0}
+  htmlBytes: 2611781
+  usedMarker: playersArray
+  usableAssets: 3
+[ktc] continuing without KTC - the blend will use the remaining sources
+
+[format] 1qb-8tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9605 | Jahmyr Gibbs 9280 | Puka Nacua 8587
+  [publish] ok - 472 assets live
+
+[format] 1qb-8tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9604 | Jahmyr Gibbs 9275 | Puka Nacua 8620
+  [publish] ok - 472 assets live
+
+[format] 1qb-8tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9604 | Jahmyr Gibbs 9273 | Puka Nacua 8631
+  [publish] ok - 472 assets live
+
+[format] 1qb-10tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9605 | Jahmyr Gibbs 9278 | Puka Nacua 8591
+  [publish] ok - 472 assets live
+
+[format] 1qb-10tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9604 | Jahmyr Gibbs 9274 | Puka Nacua 8625
+  [publish] ok - 472 assets live
+
+[format] 1qb-10tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9604 | Jahmyr Gibbs 9272 | Puka Nacua 8637
+  [publish] ok - 472 assets live
+
+[format] 1qb-12tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9603 | Jahmyr Gibbs 9274 | Puka Nacua 8623
+  [publish] ok - 472 assets live
+
+[format] 1qb-12tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9602 | Jahmyr Gibbs 9269 | Puka Nacua 8656
+  [publish] ok - 472 assets live
+
+[format] 1qb-12tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9602 | Jahmyr Gibbs 9267 | Puka Nacua 8668
+  [publish] ok - 472 assets live
+
+[format] 1qb-14tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9603 | Jahmyr Gibbs 9272 | Puka Nacua 8645
+  [publish] ok - 472 assets live
+
+[format] 1qb-14tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9601 | Jahmyr Gibbs 9266 | Puka Nacua 8679
+  [publish] ok - 472 assets live
+
+[format] 1qb-14tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9602 | Jahmyr Gibbs 9264 | Puka Nacua 8691
+  [publish] ok - 472 assets live
+
+[format] 1qb-16tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9602 | Jahmyr Gibbs 9267 | Puka Nacua 8668
+  [publish] ok - 472 assets live
+
+[format] 1qb-16tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9602 | Jahmyr Gibbs 9267 | Puka Nacua 8668
+  [publish] ok - 472 assets live
+
+[format] 1qb-16tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9602 | Jahmyr Gibbs 9267 | Puka Nacua 8668
+  [publish] ok - 472 assets live
+
+[format] sf-8tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 407 with 30d trend; history depth 1d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 9333 | Bijan Robinson 9141 | Lamar Jackson 8764 | Jaxon Smith-Njigba 8708
+  [publish] ok - 472 assets live
+
+[format] sf-8tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 407 with 30d trend; history depth 1d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 9376 | Bijan Robinson 9134 | Lamar Jackson 8759 | Jaxon Smith-Njigba 8744
+  [publish] ok - 472 assets live
+
+[format] sf-8tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 407 with 30d trend; history depth 1d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 9391 | Bijan Robinson 9134 | Jaxon Smith-Njigba 8774 | Lamar Jackson 8759
+  [publish] ok - 472 assets live
+
+[format] sf-10tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [blend] 472 assets from 2 sources; 407 with 30d trend; history depth 1d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 9342 | Bijan Robinson 9103 | Lamar Jackson 8756 | Jaxon Smith-Njigba 8659
   [publish] ok - 472 assets live
 
 [format] sf-10tm-0.5ppr
