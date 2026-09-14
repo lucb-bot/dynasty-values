@@ -1,0 +1,83 @@
+run:       2026-09-14T21:39:15Z
+exit code: 0
+---
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 9177 | Bijan Robinson 9042 | Lamar Jackson 8730 | Jaxon Smith-Njigba 8662
+  [publish] ok - 472 assets live
+
+[format] sf-12tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8893 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8365
+  [publish] ok - 472 assets live
+
+[format] sf-12tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8890 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8360
+  [publish] ok - 472 assets live
+
+[format] sf-12tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8907 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8393
+  [publish] ok - 472 assets live
+
+[format] sf-14tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8903 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8384
+  [publish] ok - 472 assets live
+
+[format] sf-14tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8900 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8378
+  [publish] ok - 472 assets live
+
+[format] sf-14tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8917 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8411
+  [publish] ok - 472 assets live
+
+[format] sf-16tm-0ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8907 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8393
+  [publish] ok - 472 assets live
+
+[format] sf-16tm-0.5ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8907 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8393
+  [publish] ok - 472 assets live
+
+[format] sf-16tm-1ppr
+  [fantasycalc] 419 assets, 3 unmatched
+  [dynastyprocess] 479 assets, 2 unmatched
+  [ktc] 3 assets, 0 unmatched
+  [blend] 472 assets from 3 sources; 407 with 30d trend; history depth 0d
+  [top5] Josh Allen 10000 | Ja'Marr Chase 8907 | Bijan Robinson 8529 | Lamar Jackson 8529 | Jaxon Smith-Njigba 8393
+  [publish] ok - 472 assets live
+
+[pipeline] done. published: 1qb-8tm-0ppr, 1qb-8tm-0.5ppr, 1qb-8tm-1ppr, 1qb-10tm-0ppr, 1qb-10tm-0.5ppr, 1qb-10tm-1ppr, 1qb-12tm-0ppr, 1qb-12tm-0.5ppr, 1qb-12tm-1ppr, 1qb-14tm-0ppr, 1qb-14tm-0.5ppr, 1qb-14tm-1ppr, 1qb-16tm-0ppr, 1qb-16tm-0.5ppr, 1qb-16tm-1ppr, sf-8tm-0ppr, sf-8tm-0.5ppr, sf-8tm-1ppr, sf-10tm-0ppr, sf-10tm-0.5ppr, sf-10tm-1ppr, sf-12tm-0ppr, sf-12tm-0.5ppr, sf-12tm-1ppr, sf-14tm-0ppr, sf-14tm-0.5ppr, sf-14tm-1ppr, sf-16tm-0ppr, sf-16tm-0.5ppr, sf-16tm-1ppr
