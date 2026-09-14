@@ -180,6 +180,9 @@ const AI_SYSTEM = [
   '- Do not add players who are not listed. Do not guess at ages or teams.',
   '- If the facts are thin, write less. Never pad.',
   '',
+  '- Every figure below is already labelled. Do not relabel a number: if a line says',
+  '  "starting lineup is worth X", never call X the total roster value.',
+  '',
   'STYLE: 3 short paragraphs, plain prose, no headers, no bullet points, no emoji.',
   'Address the manager as "you". Be direct and concrete, citing the given numbers.',
   'End with the single most important move the facts point to.',
@@ -195,7 +198,10 @@ async function analyze(request, env) {
 
   // Keep the prompt small: this is a summarization job, not a data dump, and
   // the free-tier budget is per-token.
-  const prompt = JSON.stringify(facts).slice(0, 6000);
+  // The browser sends pre-written factual sentences; pass them through as-is.
+  const prompt = typeof facts.facts === 'string'
+    ? facts.facts.slice(0, 7000)
+    : JSON.stringify(facts).slice(0, 7000);
 
   let lastError = null;
   for (const model of AI_MODELS) {

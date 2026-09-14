@@ -383,37 +383,64 @@ function aiPanel() {
 }
 
 /**
- * The exact facts handed to the writer model. Deliberately small and already
- * computed — the model is not asked to analyse anything, only to phrase this.
+ * The exact facts handed to the writer model.
+ *
+ * Deliberately pre-written as labelled English sentences rather than raw JSON.
+ * A small model reading `{startingLineupValue: 61200}` will happily call that
+ * "total value" in its prose; a line that already reads "Your starting lineup
+ * is worth 61,200 points" leaves nothing to misread. The model's job is phrasing
+ * and ordering, not interpretation.
  */
 function buildFacts() {
   const an = state.analysis;
   const mine = state.rosterAssets.find((r) => r.rosterId === state.myRosterId);
-  const trim = (x) => ({ name: x.name, position: x.position, age: x.age, value: x.value,
-                         reasons: x.reasons.map((r) => r.text) });
-  return {
-    league: { name: state.league.name, teams: state.format.teams,
-              superflex: state.format.superflex, scoring: state.format.ppr === 1 ? 'PPR' : state.format.ppr === 0.5 ? 'half-PPR' : 'standard' },
-    yourTeam: {
-      record: mine?.record,
-      totalValueRank: `${an.profile.rank} of ${an.profile.of}`,
-      stance: an.profile.stance,
-      shareOfValueInYoungPlayers: pct(an.profile.youthShare),
-      startingLineupValue: an.lineup.starterValue,
-      benchValue: an.lineup.benchValue,
-    },
-    lineupSlots: an.slots.map((s) => ({
-      slot: s.slot, yourStarter: s.player?.name ?? 'EMPTY', value: s.value,
-      leagueMedianAtSlot: s.leagueMedian, rank: `${s.rank} of ${s.of}`,
-    })),
-    sellCandidates: an.sells.slice(0, 5).map(trim),
-    buyCandidates: an.buys.slice(0, 5).map(trim),
-    suggestedTrades: an.ideas.slice(0, 3).map((i) => ({
-      give: i.give.map((g) => `${g.name} (${g.value})`),
-      get: `${i.get.name} (${i.get.value})`,
-      from: i.withTeam, type: i.type,
-    })),
-  };
+  const f = state.format;
+  const lines = [];
+
+  lines.push(`League: ${state.league.name}, ${f.teams} teams, ` +
+    `${f.superflex ? 'superflex (you start two quarterbacks)' : 'one quarterback'}, ` +
+    `${f.ppr === 1 ? 'full PPR' : f.ppr === 0.5 ? 'half PPR' : 'standard'} scoring.`);
+  if (mine?.record) lines.push(`Your record this season is ${mine.record}.`);
+  lines.push(`Your roster ranks ${an.profile.rank} of ${an.profile.of} in the league by total asset value.`);
+  lines.push(`Your starting lineup is worth ${fmt(an.lineup.starterValue)} points in blended value.`);
+  lines.push(`The players on your bench are worth ${fmt(an.lineup.benchValue)} points combined.`);
+  lines.push(`${pct(an.profile.youthShare)} of your roster value sits in young players rather than win-now players.`);
+  lines.push(`Based on those two figures the roster reads as: ${an.profile.stance}.`);
+
+  lines.push('');
+  lines.push('Your starting lineup, slot by slot, compared with what the other teams start in the same slot:');
+  for (const s of an.slots) {
+    lines.push(`- ${s.slot}: you start ${s.player ? s.player.name : 'nobody'} ` +
+      `worth ${fmt(s.value)} points; the league median at this slot is ${fmt(s.leagueMedian)} points; ` +
+      `you rank ${s.rank} of ${s.of}.`);
+  }
+
+  if (an.sells.length) {
+    lines.push('');
+    lines.push('Players on your roster worth moving, and the reason each was flagged:');
+    for (const x of an.sells.slice(0, 5)) {
+      lines.push(`- ${x.name} (${x.position}, age ${x.age ?? 'unknown'}, worth ${fmt(x.value)} points): ` +
+        x.reasons.map((r) => r.text).join('; ') + '.');
+    }
+  }
+  if (an.buys.length) {
+    lines.push('');
+    lines.push('Players on other rosters worth targeting, and the reason each was flagged:');
+    for (const x of an.buys.slice(0, 5)) {
+      lines.push(`- ${x.name} (${x.position}, age ${x.age ?? 'unknown'}, worth ${fmt(x.value)} points): ` +
+        x.reasons.map((r) => r.text).join('; ') + '.');
+    }
+  }
+  if (an.ideas.length) {
+    lines.push('');
+    lines.push('Specific trades the numbers point to:');
+    for (const i of an.ideas.slice(0, 3)) {
+      lines.push(`- Send ${i.give.map((g) => `${g.name} (${fmt(g.value)} points)`).join(' and ')} ` +
+        `to ${i.withTeam || 'another team'} for ${i.get.name} (${fmt(i.get.value)} points).`);
+    }
+  }
+
+  return { facts: lines.join('\n') };
 }
 
 function renderRoster() {
