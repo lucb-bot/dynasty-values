@@ -91,17 +91,60 @@ function toAsset(row, superflex) {
   };
 }
 
-export async function scrapeKtc({ superflex, fetchImpl = fetch } = {}) {
+/**
+ * Describe what we actually got, so a partial parse is diagnosable without
+ * being able to reach the site directly. A silent partial parse is the
+ * dangerous failure here: a source contributing three assets still looks like
+ * a working source, and its top asset would be normalized as if it were the
+ * best player in dynasty football.
+ */
+export function diagnose(data, superflex) {
+  const keys = new Map();
+  for (const row of data.slice(0, 200)) {
+    for (const k of Object.keys(row || {})) keys.set(k, (keys.get(k) || 0) + 1);
+  }
+  const probe = (fn) => data.filter((r) => { try { return Number.isFinite(Number(fn(r))); } catch { return false; } }).length;
+  return {
+    rows: data.length,
+    topLevelKeys: [...keys.entries()].sort((a, b) => b[1] - a[1]).slice(0, 14).map(([k, n]) => `${k}(${n})`),
+    sampleRow: JSON.stringify(data[0] ?? null).slice(0, 400),
+    valuePathHits: {
+      'superflexValues.value': probe((r) => r.superflexValues?.value),
+      'oneQBValues.value': probe((r) => r.oneQBValues?.value),
+      'sfValues.value': probe((r) => r.sfValues?.value),
+      'qbValues.value': probe((r) => r.qbValues?.value),
+      'value': probe((r) => r.value),
+      'sfValue': probe((r) => r.sfValue),
+    },
+    namePathHits: {
+      playerName: data.filter((r) => r?.playerName).length,
+      name: data.filter((r) => r?.name).length,
+      player: data.filter((r) => r?.player).length,
+    },
+  };
+}
+
+export async function scrapeKtc({ superflex, fetchImpl = fetch, minAssets = 50 } = {}) {
   const res = await fetchImpl(RANKINGS_URL, {
     headers: { 'user-agent': UA, accept: 'text/html,application/xhtml+xml' },
   });
-  if (!res.ok) throw new Error(`KTC returned ${res.status}`);
+  if (!res.ok) throw new Error(`KTC returned ${res.status} (body ${(await res.text()).length} bytes)`);
   const html = await res.text();
   const { data, usedMarker } = parseKtcHtml(html);
+  const diag = diagnose(data, superflex);
 
   const assets = data.map((r) => toAsset(r, superflex)).filter(Boolean);
-  if (!assets.length) {
-    throw new Error(`KTC parsed ${data.length} rows but none had usable ${superflex ? 'superflex' : '1QB'} values`);
+
+  // A parse that yields a handful of assets is a FAILURE, not a thin result.
+  // Blending ranks each source independently, so a three-asset source would
+  // have its best asset priced as the best asset in the game.
+  if (assets.length < minAssets) {
+    const e = new Error(
+      `KTC yielded only ${assets.length} usable ${superflex ? 'superflex' : '1QB'} assets ` +
+      `from ${data.length} parsed rows (minimum ${minAssets}). Refusing to use a partial board.`
+    );
+    e.diagnostics = { ...diag, htmlBytes: html.length, usedMarker, usableAssets: assets.length };
+    throw e;
   }
-  return { assets, rowCount: data.length, usedMarker };
+  return { assets, rowCount: data.length, usedMarker, diagnostics: diag };
 }

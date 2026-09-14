@@ -327,3 +327,65 @@ test('valueSpread ranks disagreement sensibly where CV does not', () => {
   const byPoints = [...b.assets].sort((p, q) => q.valueSpread - p.valueSpread);
   assert.equal(byPoints[0].id, 'stud');
 });
+
+test('a source with too few assets is refused, not silently blended', async () => {
+  const { scrapeKtc } = await import('../pipeline/ktc-scrape.mjs');
+  // A page that parses fine but only yields a few usable rows - the exact
+  // failure seen in production, where KTC returned 3 assets out of ~500.
+  const thinHtml = `<script>var playersArray = ${JSON.stringify(
+    Array.from({ length: 5 }, (_, i) => ({
+      playerName: `P${i}`, playerID: i, position: 'WR', superflexValues: { value: 9000 - i },
+    })),
+  )};</script>`;
+  const fakeFetch = async () => ({ ok: true, status: 200, text: async () => thinHtml });
+  await assert.rejects(
+    () => scrapeKtc({ superflex: true, fetchImpl: fakeFetch }),
+    (e) => {
+      assert.match(e.message, /only 5 usable/);
+      assert.ok(e.diagnostics, 'the error must carry diagnostics for remote debugging');
+      assert.equal(e.diagnostics.rows, 5);
+      assert.ok(e.diagnostics.valuePathHits['superflexValues.value'] === 5);
+      return true;
+    },
+  );
+  // And a full board still passes.
+  const fullHtml = `<script>var playersArray = ${JSON.stringify(
+    Array.from({ length: 300 }, (_, i) => ({
+      playerName: `P${i}`, playerID: i, position: 'WR', superflexValues: { value: 9000 - i },
+    })),
+  )};</script>`;
+  const ok = await scrapeKtc({ superflex: true, fetchImpl: async () => ({ ok: true, status: 200, text: async () => fullHtml }) });
+  assert.equal(ok.assets.length, 300);
+});
+
+test('blending three assets from one source cannot inflate them to elite value', () => {
+  // Demonstrates WHY the guard above exists: rank-normalization prices the top
+  // asset of every source at the top of the consensus curve.
+  const big = Array.from({ length: 300 }, (_, i) => ({
+    id: `p${i}`, kind: 'player', name: `P${i}`, position: 'WR', rawValue: 10000 - i * 30,
+  }));
+  const tiny = [
+    { id: 'p250', kind: 'player', name: 'P250', position: 'WR', rawValue: 500 },
+    { id: 'p260', kind: 'player', name: 'P260', position: 'WR', rawValue: 400 },
+    { id: 'p270', kind: 'player', name: 'P270', position: 'WR', rawValue: 300 },
+  ];
+  const bad = blendSources([{ source: 'fantasycalc', assets: big }, { source: 'ktc', assets: tiny }]);
+  const good = blendSources([{ source: 'fantasycalc', assets: big }]);
+
+  const cleanRank = good.assets.find((a) => a.id === 'p250').overallRank;
+  const inflated = bad.assets.find((a) => a.id === 'p250');
+
+  // A deep bench player is dragged a hundred-plus places up the board purely
+  // because he happened to be ranked first within a three-asset source.
+  assert.ok(cleanRank > 200, `sanity: p250 should sit deep when blended alone, got ${cleanRank}`);
+  assert.ok(cleanRank - inflated.overallRank > 100,
+    `p250 moves from ${cleanRank} to ${inflated.overallRank} with a 3-asset source in the blend - ` +
+    'this distortion is what the MIN_ASSETS guard prevents');
+
+  // All three of the thin source's assets are inflated, not just the first.
+  for (const id of ['p250', 'p260', 'p270']) {
+    const dirty = bad.assets.find((a) => a.id === id).overallRank;
+    const clean = good.assets.find((a) => a.id === id).overallRank;
+    assert.ok(clean - dirty > 90, `${id}: ${clean} -> ${dirty}`);
+  }
+});

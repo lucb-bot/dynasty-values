@@ -172,6 +172,12 @@ async function main() {
         ktcByQb.set(sf, assets);
       } catch (e) {
         console.warn(`[ktc] FAILED (${sf ? 'sf' : '1qb'}): ${e.message}`);
+        if (e.diagnostics) {
+          console.warn('[ktc] diagnostics:');
+          for (const [k, v] of Object.entries(e.diagnostics)) {
+            console.warn(`  ${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`);
+          }
+        }
         console.warn('[ktc] continuing without KTC - the blend will use the remaining sources');
       }
     }
@@ -212,14 +218,26 @@ async function main() {
                         fetchedAt: new Date().toISOString() });
     }
 
-    if (!results.length) { console.warn('  no sources available; skipping'); continue; }
+    // A source that returns a handful of assets must not reach the blend.
+    // Ranks are assigned within each source, so a 3-asset source would have its
+    // best asset priced as the most valuable asset in dynasty football.
+    const MIN_ASSETS = 50;
+    const usable = results.filter((r) => {
+      if (r.assets.length >= MIN_ASSETS) return true;
+      console.warn(`  [${r.source}] EXCLUDED: only ${r.assets.length} assets (minimum ${MIN_ASSETS})`);
+      const meta = sourceMeta.find((m) => m.source === r.source);
+      if (meta) meta.excluded = `only ${r.assets.length} assets`;
+      return false;
+    });
+    if (!usable.length) { console.warn('  no usable sources; skipping'); continue; }
+    const results_ = usable;
 
-    const board = blendSources(results, { weights: cfg.weights });
+    const board = blendSources(results_, { weights: cfg.weights });
     const history = await loadHistory(key);
     annotateTrends(board.assets, history);
 
     const withTrend = board.assets.filter((a) => a.delta30 != null).length;
-    console.log(`  [blend] ${board.assets.length} assets from ${results.length} sources; ` +
+    console.log(`  [blend] ${board.assets.length} assets from ${results_.length} sources; ` +
                 `${withTrend} with 30d trend; history depth ${history.length}d`);
     console.log('  [top5] ' + board.assets.slice(0, 5).map((a) => `${a.name} ${a.value}`).join(' | '));
 
