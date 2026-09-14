@@ -62,6 +62,15 @@ jobs:
 
       # Recorded in the repo so the live URL is discoverable without digging
       # through run logs.
+      # Keeps the Worker's copy of the shared publish password in step with the
+      # repository secret, so they can never drift apart.
+      - name: Sync the Worker's ingest token
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+        run: printf '%s' "$INGEST_TOKEN" | npx wrangler secret put INGEST_TOKEN
+
       - name: Record the deployed URL
         run: |
           if [ -n "$(git status --porcelain DEPLOYED_URL.txt)" ]; then
