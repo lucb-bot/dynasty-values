@@ -50,7 +50,7 @@ jobs:
             echo "exit code: $code"
             echo "---"
             # redact anything token-shaped before this is committed publicly
-            sed -E 's#https://[^ ]*workers\.dev#[worker-url]#g; s/[A-Za-z0-9_-]{30,}/[redacted]/g' /tmp/pipeline.log | tail -80
+            sed -E 's#https://[^ ]*workers\.dev#[worker-url]#g; s/[A-Za-z0-9_-]{30,}/[redacted]/g' /tmp/pipeline.log
           } > .ci/last-run.txt
           exit $code
 
