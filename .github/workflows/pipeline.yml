@@ -1,17 +1,16 @@
 # Nightly value refresh.
 #
 # Fetches FantasyCalc and DynastyProcess, scrapes KeepTradeCut, blends
-# everything, and publishes the boards to the Worker's KV store.
+# everything onto one scale, backfills the weekly history archive, and publishes
+# to the Worker's KV store.
 #
-# Runs on GitHub's servers, so your Mac does not need to be awake. The 30-day
-# trend history is kept in the repo (see the commit step) because GitHub
-# runners are wiped between runs and have nowhere else to keep it.
+# Runs on GitHub's servers, so no machine of yours needs to be awake.
 name: Refresh values
 
 on:
   schedule:
-    # 09:20 UTC = 5:20am Eastern. Off-the-hour on purpose: scheduled jobs
-    # queued exactly on the hour get delayed by GitHub's own load.
+    # 09:20 UTC = 5:20am Eastern. Deliberately off the hour: jobs scheduled
+    # exactly on the hour get delayed by GitHub's own load.
     - cron: '20 9 * * *'
   workflow_dispatch:
     inputs:
@@ -26,29 +25,40 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
 
       - run: npm ci --no-audit --no-fund
 
       - name: Run the pipeline
-        run: node pipeline/run.mjs ${{ inputs.skip_ktc && '--no-ktc' || '' }}
+        run: |
+          set +e
+          node pipeline/run.mjs ${{ inputs.skip_ktc && '--no-ktc' || '' }} 2>&1 | tee /tmp/pipeline.log
+          code=${PIPESTATUS[0]}
+          mkdir -p .ci
+          {
+            echo "run:       $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "exit code: $code"
+            echo "---"
+            # redact anything token-shaped before this is committed publicly
+            sed -E 's#https://[^ ]*workers\.dev#[worker-url]#g; s/[A-Za-z0-9_-]{30,}/[redacted]/g' /tmp/pipeline.log
+          } > .ci/last-run.txt
+          exit $code
         env:
           WORKER_URL: ${{ secrets.WORKER_URL }}
           INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
 
-      - name: Save trend history
+      - name: Commit run report and trend history
+        if: always()
         run: |
-          if [ -n "$(git status --porcelain .history)" ]; then
-            git config user.name  "dynasty-values bot"
-            git config user.email "noreply@github.com"
-            git add .history
-            git commit -m "history: $(date -u +%Y-%m-%d) board snapshot"
-            git push
-          else
-            echo "no history change"
+          git config user.name  "dynasty-values bot"
+          git config user.email "noreply@github.com"
+          git add -f .ci/last-run.txt .history 2>/dev/null || true
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "ci: value refresh $(date -u +%Y-%m-%dT%H-%M) [skip ci]"
+            git pull --rebase -q && git push
           fi
