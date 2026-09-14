@@ -21,6 +21,9 @@ mini. Total cost: **$0/month**, no domain required.
 - **Power rankings** for the whole league, picks included.
 - **Movers** over 7 and 30 days, and the players your sources most disagree
   about.
+- **Click any player** for a weekly value chart going back two years, plus what
+  each source says about him and who rosters him in your league.
+- **A written summary** of your roster, generated free on Cloudflare's AI tier.
 
 ---
 
@@ -153,6 +156,44 @@ npm run pipeline         # for real
 `scripts/com.dynastyvalues.pipeline.plist` schedules that nightly on macOS; see
 the comments inside it. Note this only works from a real Terminal on macOS, not
 from a sandboxed shell.
+
+## Where the analysis comes from
+
+**Player history is real, not accumulated.** DynastyProcess has committed its
+values CSV to GitHub weekly since 2024, so their git history is a two-year
+archive. The pipeline reads it through the GitHub API and assembles a per-player
+series, which is why charts work on day one instead of after a month of your own
+snapshots. Runs are incremental: the first pulls ~100 weekly snapshots, every
+run after that pulls one.
+
+**Suggestions are lineup-aware.** The rule this file follows is that every
+reason must be earned by a computation that could have come out the other way. A
+reason that would fire for most players on most rosters is noise, so blanket
+claims like "he's in his prime" were deliberately removed. What survives:
+
+- *He cannot start for you.* Computed from your league's actual roster slots,
+  positionally — a 5,000 RB buried behind three better RBs is trapped value even
+  if your starting TE is worth 900.
+- *Your value is stacked where it cannot play.* N benched players at one
+  position where only M start.
+- *His trajectory contradicts his age.* Down 30% over a year at 23 is a
+  different story from down 30% at 29, and needs the real archive to see.
+- *The market disagrees with the consensus.* KTC versus the other sources.
+- *He sits on a tier cliff.* Derived from the shape of the consensus curve.
+- *Your starter at this slot is below the league median.* Slot by slot, against
+  what every other roster actually starts there.
+
+**Consolidation** gets its own treatment, because it is the move most rosters
+need and no single-player recommendation surfaces: several benched players
+packaged into one starter you are missing.
+
+**The written summary** uses Cloudflare Workers AI (free: 10,000 neurons/day;
+one summary costs a fraction of that). The model available there is small and
+knows nothing about the current NFL season, so it is used strictly as a *writer*,
+never an analyst — it receives facts already computed from the value data and is
+instructed to add nothing. That constraint is the point: an LLM asked to opine on
+fantasy football without current knowledge will invent injuries and depth charts
+with complete confidence. The UI says so plainly.
 
 ## How the blending works
 

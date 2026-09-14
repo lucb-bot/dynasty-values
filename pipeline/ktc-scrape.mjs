@@ -46,6 +46,35 @@ function extractArrayAt(html, from) {
 const MARKERS = ['playersArray', 'var players =', 'window.playersArray', 'playerDataArray'];
 
 /**
+ * KTC's current page shape (verified 2026-09-14 by inspecting the live page).
+ *
+ * The board is NOT a JavaScript array literal any more. It is 2.2MB of JSON
+ * inside a script tag, which the page parses at runtime:
+ *
+ *   <script id="ktc-players" type="application/json">[ ...500 players... ]</script>
+ *   playersArray = JSON.parse(document.getElementById('ktc-players').textContent);
+ *
+ * That is why scanning for an array literal after `playersArray` produced three
+ * rows: it found the unrelated `oneQBPlayers` literal that follows on the same
+ * line. Reading the JSON element is both correct and far more robust, since it
+ * needs no brace matching at all.
+ */
+const JSON_ELEMENT_IDS = ['ktc-players', 'ktc-playersArray', 'ktc-player-data'];
+
+function extractJsonScript(html) {
+  for (const id of JSON_ELEMENT_IDS) {
+    // <script id="ktc-players" type="application/json"> ... </script>
+    const re = new RegExp(
+      `<script[^>]*id=["']${id}["'][^>]*>([\\s\\S]*?)</script>`, 'i');
+    const m = html.match(re);
+    if (m && m[1].trim().startsWith('[')) {
+      return { text: m[1].trim(), marker: `#${id} (json script)`, at: m.index };
+    }
+  }
+  return null;
+}
+
+/**
  * Collect EVERY array literal following EVERY occurrence of a marker, and keep
  * the largest.
  *
@@ -71,7 +100,9 @@ function extractLargestArray(html) {
 }
 
 export function parseKtcHtml(html) {
-  const best = extractLargestArray(html);
+  // Preferred path: the JSON script element. Fall back to scanning for an array
+  // literal so an older or changed page shape still has a chance of working.
+  const best = extractJsonScript(html) || extractLargestArray(html);
   if (!best) {
     throw new Error(
       'Could not find the player array in KTC HTML. Their page structure likely changed. ' +

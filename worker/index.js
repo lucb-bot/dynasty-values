@@ -90,6 +90,15 @@ export default {
       if (pathname === '/api/board' && request.method === 'GET') {
         return await getBoard(url, env);
       }
+      if (pathname === '/api/history' && request.method === 'GET') {
+        return await getHistory(url, env);
+      }
+      if (pathname === '/api/ingest/history' && request.method === 'POST') {
+        return await ingestHistory(request, env);
+      }
+      if (pathname === '/api/analyze' && request.method === 'POST') {
+        return await analyze(request, env);
+      }
       if (pathname === '/api/status' && request.method === 'GET') {
         return await getStatus(env);
       }
@@ -140,6 +149,96 @@ async function getBoard(url, env) {
       'x-board-fallback': 'true',
     },
   });
+}
+
+/**
+ * Written roster summary, via Cloudflare Workers AI (free allocation: 10,000
+ * neurons/day; one summary costs a small fraction of that).
+ *
+ * IMPORTANT DESIGN CONSTRAINT. The model available here is a small open model
+ * with no knowledge of the current NFL season. Asked for opinions it would
+ * invent injuries, depth charts and trades with total confidence. So it is used
+ * strictly as a WRITER, never as an analyst: the browser sends facts that were
+ * already computed from the value data, and the model's only job is to turn
+ * those numbers into readable prose. The system prompt forbids adding anything
+ * not present in the input, and the UI labels the output accordingly.
+ */
+const AI_MODELS = [
+  '@cf/meta/llama-3.1-8b-instruct',
+  '@cf/meta/llama-3.2-3b-instruct',
+  '@cf/meta/llama-3.2-1b-instruct',
+];
+
+const AI_SYSTEM = [
+  'You are writing a short dynasty fantasy football roster summary.',
+  '',
+  'ABSOLUTE RULES:',
+  '- Use ONLY the facts in the user message. Every number you write must appear there.',
+  '- You do NOT know anything about the current NFL season: no injuries, depth charts,',
+  '  coaching changes, or recent games. Never mention any of these. Never invent a reason',
+  '  a player rose or fell.',
+  '- Do not add players who are not listed. Do not guess at ages or teams.',
+  '- If the facts are thin, write less. Never pad.',
+  '',
+  'STYLE: 3 short paragraphs, plain prose, no headers, no bullet points, no emoji.',
+  'Address the manager as "you". Be direct and concrete, citing the given numbers.',
+  'End with the single most important move the facts point to.',
+].join('\n');
+
+async function analyze(request, env) {
+  if (!env.AI) return err(503, 'Workers AI is not bound to this Worker');
+  let facts;
+  try {
+    facts = await request.json();
+  } catch { return err(400, 'invalid JSON'); }
+  if (!facts || typeof facts !== 'object') return err(400, 'expected a facts object');
+
+  // Keep the prompt small: this is a summarization job, not a data dump, and
+  // the free-tier budget is per-token.
+  const prompt = JSON.stringify(facts).slice(0, 6000);
+
+  let lastError = null;
+  for (const model of AI_MODELS) {
+    try {
+      const res = await env.AI.run(model, {
+        messages: [
+          { role: 'system', content: AI_SYSTEM },
+          { role: 'user', content: prompt },
+        ],
+        max_tokens: 420,
+        temperature: 0.3,
+      });
+      const text = (res?.response || '').trim();
+      if (text) return json({ text, model });
+      lastError = 'empty response';
+    } catch (e) {
+      lastError = e?.message || String(e);
+    }
+  }
+  return err(502, `Workers AI failed: ${lastError}`);
+}
+
+/**
+ * Weekly value history, used by the player detail charts. Served as stored text
+ * for the same reason boards are: parsing it here would blow the CPU budget.
+ */
+async function getHistory(url, env) {
+  const qb = url.searchParams.get('qb') === 'sf' ? 'sf' : '1qb';
+  const text = await env.VALUES.get(`history:${qb}`, { type: 'text' });
+  if (!text) return err(404, 'no history published yet');
+  return new Response(text, {
+    headers: { ...JSON_HEADERS, 'cache-control': BOARD_CACHE },
+  });
+}
+
+async function ingestHistory(request, env) {
+  if (!tokenMatches(bearer(request), env.INGEST_TOKEN)) return err(401, 'bad or missing ingest token');
+  const body = await request.json();
+  const qb = body.qb === 'sf' ? 'sf' : '1qb';
+  if (!body.history?.dates?.length) return err(400, 'history.dates is required');
+  await env.VALUES.put(`history:${qb}`, JSON.stringify(body.history));
+  return json({ ok: true, qb, points: body.history.dates.length,
+                players: Object.keys(body.history.series || {}).length });
 }
 
 /** Freshness and coverage, so the UI can show when each source last updated. */

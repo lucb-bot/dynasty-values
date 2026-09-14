@@ -15,7 +15,12 @@ not_found_handling = "single-page-application"
 # then paste the id below.
 [[kv_namespaces]]
 binding = "VALUES"
-id = "b5e40d170b9444c189685ed8f176f12c"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# Workers AI powers the written roster summary. The free allocation is 10,000
+# neurons/day, and one summary costs a tiny fraction of that.
+[ai]
+binding = "AI"
 
 [vars]
 # Optional. Leave blank; the browser remembers your league in localStorage.

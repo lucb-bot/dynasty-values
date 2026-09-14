@@ -28,6 +28,7 @@ import { loadFantasyCalc } from './sources/fantasycalc.js';
 import { loadDynastyProcess } from './sources/dynastyprocess.js';
 import { parseKtcPayload } from './sources/ktc.js';
 import { scrapeKtc } from './ktc-scrape.mjs';
+import { buildHistory, changeOver } from './backfill-history.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..');
@@ -111,6 +112,27 @@ async function saveHistory(key, assets) {
   }
 }
 
+/** Read back the history we published last night, so runs are incremental. */
+async function fetchPublishedHistory(cfg, key) {
+  try {
+    const res = await fetch(new URL(`/api/history?qb=${key}`, cfg.workerUrl), {
+      headers: { authorization: `Bearer ${cfg.ingestToken}` },
+    });
+    if (!res.ok) return null;
+    const j = await res.json();
+    return j?.dates?.length ? j : null;
+  } catch { return null; }
+}
+
+async function publishHistory(cfg, key, history) {
+  const res = await fetch(new URL('/api/ingest/history', cfg.workerUrl), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${cfg.ingestToken}` },
+    body: JSON.stringify({ qb: key, history }),
+  });
+  if (!res.ok) throw new Error(`history publish ${res.status}: ${(await res.text()).slice(0, 200)}`);
+}
+
 async function publish(cfg, key, board, sources) {
   const res = await fetch(new URL('/api/ingest/board', cfg.workerUrl), {
     method: 'POST',
@@ -183,6 +205,26 @@ async function main() {
     }
   }
 
+  // Long-horizon history, once per QB type (DynastyProcess has no team/PPR
+  // dimension). This is what powers the player charts and the 90-day and
+  // one-year trajectory reasoning.
+  const historyByQb = new Map();
+  for (const sf of new Set(formats.map((f) => f.superflex))) {
+    const key = sf ? 'sf' : '1qb';
+    try {
+      const existing = await fetchPublishedHistory(cfg, key);
+      console.log(`[history] ${key}:`);
+      const built = await buildHistory(sf, xw, { existing, log: console.log });
+      console.log(`[history] ${key}: ${built.dates.length} weekly points, ` +
+                  `${Object.keys(built.series).length} players, ` +
+                  `${built.dates[0] ?? '-'} -> ${built.dates[built.dates.length - 1] ?? '-'}`);
+      historyByQb.set(sf, built);
+      if (!dryRun) await publishHistory(cfg, key, built);
+    } catch (e) {
+      console.warn(`[history] ${key} FAILED: ${e.message}`);
+    }
+  }
+
   const published = [];
   for (const format of formats) {
     const key = formatKey(format);
@@ -235,6 +277,22 @@ async function main() {
     const board = blendSources(results_, { weights: cfg.weights });
     const history = await loadHistory(key);
     annotateTrends(board.assets, history);
+
+    // Real long-horizon moves, from DynastyProcess's weekly archive.
+    const long = historyByQb.get(format.superflex);
+    if (long) {
+      let covered = 0;
+      for (const a of board.assets) {
+        const row = long.series[a.id];
+        if (!row) continue;
+        const d90 = changeOver(long.dates, row, 90);
+        const d365 = changeOver(long.dates, row, 365);
+        if (d90) { a.delta90 = d90.delta; a.pct90 = Number(d90.pct?.toFixed(4)); }
+        if (d365) { a.delta365 = d365.delta; a.pct365 = Number(d365.pct?.toFixed(4)); }
+        if (d90 || d365) covered++;
+      }
+      console.log(`  [history] ${covered} assets carry long-horizon trend`);
+    }
 
     const withTrend = board.assets.filter((a) => a.delta30 != null).length;
     console.log(`  [blend] ${board.assets.length} assets from ${results_.length} sources; ` +

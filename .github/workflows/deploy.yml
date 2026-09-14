@@ -18,14 +18,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: npm
 
       - run: npm ci --no-audit --no-fund
@@ -36,47 +34,8 @@ jobs:
             https://raw.githubusercontent.com/dynastyprocess/data/master/files/db_playerids.csv
           npm test
 
-      # Output is mirrored into the job summary so failures are diagnosable
-      # without downloading the raw log archive.
       - name: Deploy Worker
-        id: deploy
+        run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set +e
-          npx wrangler deploy 2>&1 | tee /tmp/deploy.log
-          code=${PIPESTATUS[0]}
-          {
-            echo "### wrangler deploy (exit $code)"
-            echo '```'
-            # redact anything token-shaped, just in case
-            sed -E 's/[A-Za-z0-9_-]{30,}/[redacted]/g' /tmp/deploy.log | tail -60
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          if [ $code -ne 0 ]; then exit $code; fi
-          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -1)
-          echo "### Deployed URL" >> "$GITHUB_STEP_SUMMARY"
-          echo "$url" >> "$GITHUB_STEP_SUMMARY"
-          echo "$url" > DEPLOYED_URL.txt
-
-      # Recorded in the repo so the live URL is discoverable without digging
-      # through run logs.
-      # Keeps the Worker's copy of the shared publish password in step with the
-      # repository secret, so they can never drift apart.
-      - name: Sync the Worker's ingest token
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
-        run: printf '%s' "$INGEST_TOKEN" | npx wrangler secret put INGEST_TOKEN
-
-      - name: Record the deployed URL
-        run: |
-          if [ -n "$(git status --porcelain DEPLOYED_URL.txt)" ]; then
-            git config user.name  "dynasty-values bot"
-            git config user.email "noreply@github.com"
-            git add DEPLOYED_URL.txt
-            git commit -m "ci: record deployed URL [skip ci]"
-            git push
-          fi

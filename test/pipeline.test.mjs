@@ -248,12 +248,16 @@ test('END TO END: real data -> three sources -> board -> league -> suggestions',
   const an = analyzeRoster({
     myAssets: mine.assets, rostersAssets: rosterAssets,
     allAssets: board.assets, ownerByAssetId,
+    rosterPositions: ['QB', 'RB', 'RB', 'WR', 'WR', 'WR', 'TE', 'FLEX', 'SUPER_FLEX',
+                      'BN', 'BN', 'BN', 'BN', 'BN', 'BN'],
   });
 
   for (const pos of ['QB', 'RB', 'WR', 'TE']) {
     assert.ok(an.strength[pos], `strength computed for ${pos}`);
     assert.ok(an.strength[pos].percentile >= 0 && an.strength[pos].percentile <= 1);
   }
+  assert.ok(an.slots.length >= 9, 'a lineup slot analysis exists for every starting slot');
+  assert.ok(an.lineup.starters.length > 0 && an.lineup.starterValue > 0);
   assert.ok(['contend', 'rebuild', 'retool', 'contend-with-youth'].includes(an.profile.stance));
   assert.ok(an.profile.rank >= 1 && an.profile.rank <= 12);
   assert.ok(Array.isArray(an.sells) && Array.isArray(an.buys) && Array.isArray(an.ideas));
@@ -265,7 +269,8 @@ test('END TO END: real data -> three sources -> board -> league -> suggestions',
   const myIds = new Set(mine.assets.map(a => a.id));
   for (const b of an.buys) assert.ok(!myIds.has(b.id), `${b.name} is already mine`);
   for (const idea of an.ideas) {
-    assert.ok(myIds.has(idea.give.id), 'you can only give players you own');
+    assert.ok(Array.isArray(idea.give), 'every idea exposes `give` as an array');
+    for (const g of idea.give) assert.ok(myIds.has(g.id), 'you can only give players you own');
     assert.ok(!myIds.has(idea.get.id), 'you can only get players you do not own');
   }
 
@@ -416,4 +421,182 @@ test('KTC extractor picks the real board, not the featured-player widget', async
   const reversed = `<script>var playersArray = ${JSON.stringify(real)};</script>
     <script>var playersArray = ${JSON.stringify(featured)};</script>`;
   assert.equal(parseKtcHtml(reversed).data.length, 480);
+});
+
+test('KTC board is read from the #ktc-players JSON element', async () => {
+  const { parseKtcHtml } = await import('../pipeline/ktc-scrape.mjs');
+  // The real page shape as of 2026-09: JSON in a script element, parsed at
+  // runtime, with an unrelated array literal on the same line afterwards. That
+  // trailing literal is what the old scanner latched onto.
+  const board = Array.from({ length: 500 }, (_, i) => ({
+    playerName: `Player${i}`, playerID: i, position: 'WR',
+    oneQBValues: { value: 9000 - i * 15, rank: i + 1 },
+    superflexValues: { value: 8800 - i * 14, rank: i + 1 },
+  }));
+  const decoy = [{ playerName: 'Decoy', playerID: 9999, position: 'QB', oneQBValues: { value: 1 }, superflexValues: { value: 1 } }];
+  const html = `<html><body>
+    <script id="ktc-players" type="application/json">${JSON.stringify(board)}</script>
+    <script>playersArray = JSON.parse(document.getElementById('ktc-players').textContent); var oneQBPlayers = ${JSON.stringify(decoy)};</script>
+  </body></html>`;
+
+  const { data, usedMarker } = parseKtcHtml(html);
+  assert.equal(data.length, 500, 'must read the JSON element, not the trailing decoy literal');
+  assert.equal(data[0].playerName, 'Player0');
+  assert.match(usedMarker, /ktc-players/);
+});
+
+test('KTC rookie picks (position RDP) canonicalize correctly', () => {
+  // Both naming styles appear in the same KTC feed.
+  assert.equal(canonicalPickName('2026 Pick 1.01', 'RDP'), '2026 1st (early)');
+  assert.equal(canonicalPickName('2027 Early 1st', 'RDP'), '2027 1st (early)');
+  assert.equal(canonicalPickName('2027 Mid 1st', 'RDP'), '2027 1st (mid)');
+  assert.equal(pickRoundKey(canonicalPickName('2026 Pick 1.01', 'RDP')), '2026 1st');
+});
+
+test('lineup modelling survives a league with no usable slot data', async () => {
+  const { buildLineup, deadWeight, DEFAULT_SLOTS } = await import('../public/lib/lineup.js');
+  const mk = (n, p, v) => ({ id: n, name: n, position: p, value: v, kind: 'player' });
+  const roster = [mk('a', 'RB', 5000), mk('b', 'RB', 4000), mk('c', 'WR', 3000)];
+
+  const empty = buildLineup(roster, []);
+  assert.ok(empty.starters.length > 0, 'an empty slot list must fall back to a real lineup');
+  assert.deepEqual(empty.lineup.map((l) => l.slot), DEFAULT_SLOTS);
+
+  // And a genuinely starter-less lineup must not label the whole bench dead.
+  assert.deepEqual(deadWeight({ starters: [], bench: roster }), [],
+    'with no starters there is no floor, so nothing can be below it');
+});
+
+test('suggestion reasons are specific, not blanket statements', async () => {
+  const { analyzeRoster } = await import('../public/lib/suggest.js');
+  const mk = (id, pos, val, age, extra = {}) => ({
+    id, name: id, position: pos, value: val, age, kind: 'player',
+    sources: { fantasycalc: { normalized: val }, dynastyprocess: { normalized: val } }, ...extra,
+  });
+  const slots = ['QB', 'RB', 'RB', 'WR', 'WR', 'WR', 'TE', 'FLEX', 'BN', 'BN', 'BN', 'BN', 'BN'];
+
+  // Mine: strong at RB with three benched RBs who can never start, weak at TE.
+  const mine = [
+    mk('myQB', 'QB', 7000, 27), mk('rb1', 'RB', 8000, 24), mk('rb2', 'RB', 7500, 25),
+    mk('rb3', 'RB', 5200, 26), mk('rb4', 'RB', 5000, 26), mk('rb5', 'RB', 4800, 27),
+    mk('wr1', 'WR', 7000, 25), mk('wr2', 'WR', 6000, 26), mk('wr3', 'WR', 5500, 24),
+    mk('myTE', 'TE', 900, 30),
+  ];
+  const rivals = Array.from({ length: 11 }, (_, i) => ({
+    assets: [mk(`r${i}QB`, 'QB', 6800, 27), mk(`r${i}RB1`, 'RB', 6000, 25), mk(`r${i}RB2`, 'RB', 5500, 25),
+             mk(`r${i}WR1`, 'WR', 6500, 25), mk(`r${i}WR2`, 'WR', 6000, 25), mk(`r${i}WR3`, 'WR', 5500, 25),
+             mk(`r${i}TE`, 'TE', 5000 + i * 60, 26)],
+  }));
+  const all = [...mine, ...rivals.flatMap((r) => r.assets)].sort((a, b) => b.value - a.value);
+  const ownerByAssetId = new Map();
+  rivals.forEach((r, i) => r.assets.forEach((a) => ownerByAssetId.set(a.id, `Team ${i + 1}`)));
+
+  const an = analyzeRoster({
+    myAssets: mine, rostersAssets: [{ assets: mine }, ...rivals], allAssets: all,
+    ownerByAssetId, rosterPositions: slots,
+  });
+
+  assert.equal(an.usedDefaultLineup, false, 'real slots were provided');
+
+  // The benched RBs must be flagged, and for the RIGHT reason.
+  const flagged = an.sells.map((s) => s.id);
+  assert.ok(flagged.includes('rb4') || flagged.includes('rb5'),
+    `expected a benched RB among sells, got ${flagged.join(',')}`);
+  const codes = new Set(an.sells.flatMap((s) => s.reasons.map((r) => r.code)));
+  assert.ok(codes.has('dead-weight') || codes.has('stacked'),
+    `expected a lineup-based reason, got ${[...codes].join(',')}`);
+
+  // TE is the real hole; a buy target should name that slot.
+  const buyCodes = new Set(an.buys.flatMap((b) => b.reasons.map((r) => r.code)));
+  assert.ok(buyCodes.has('upgrades-slot'), `expected a slot-upgrade reason, got ${[...buyCodes].join(',')}`);
+  const teBuy = an.buys.find((b) => b.position === 'TE');
+  assert.ok(teBuy, 'the TE hole should produce a TE target');
+
+  // The removed blanket reasons must not come back.
+  const allText = [...an.sells, ...an.buys].flatMap((x) => x.reasons.map((r) => r.text)).join(' ');
+  assert.ok(!/in his prime window/i.test(allText), 'blanket "prime window" reasoning was removed');
+  assert.ok(!/bottom-third at/i.test(allText), 'vague "bottom-third" reasoning was replaced by slot comparison');
+
+  // Every reason must carry a number - that is what makes it checkable.
+  for (const x of [...an.sells, ...an.buys]) {
+    for (const r of x.reasons) {
+      assert.ok(/\d/.test(r.text), `reason "${r.text}" has no figure in it`);
+    }
+  }
+
+  // Consolidation should see three trapped RBs and propose packaging them.
+  const cons = an.ideas.filter((i) => i.type === 'consolidation');
+  if (cons.length) {
+    assert.ok(cons[0].give.length >= 2);
+    assert.ok(/none of them start for you/.test(cons[0].rationale));
+  }
+});
+
+test('dead weight is positional, not a single value floor', async () => {
+  const { buildLineup, deadWeight } = await import('../public/lib/lineup.js');
+  const mk = (n, p, v) => ({ id: n, name: n, position: p, value: v, kind: 'player' });
+  // A weak starting TE drags the overall "worst starter" number down to 900.
+  // A 5,000 RB buried behind three better RBs is still unusable, and a naive
+  // floor comparison would wrongly clear him.
+  const roster = [
+    mk('rb1', 'RB', 8000), mk('rb2', 'RB', 7500), mk('rb3', 'RB', 5200),
+    mk('rb4', 'RB', 5000), mk('rb5', 'RB', 4800),
+    mk('wr1', 'WR', 7000), mk('wr2', 'WR', 6000), mk('wr3', 'WR', 5500),
+    mk('qb1', 'QB', 7000), mk('te1', 'TE', 900),
+  ];
+  const lu = buildLineup(roster, ['QB', 'RB', 'RB', 'WR', 'WR', 'WR', 'TE', 'FLEX']);
+  const dead = deadWeight(lu).map((a) => a.id);
+  assert.ok(dead.includes('rb4') && dead.includes('rb5'),
+    `buried RBs must be flagged despite being worth more than the starting TE, got [${dead}]`);
+  assert.ok(!dead.includes('rb1') && !dead.includes('te1'), 'starters are never dead weight');
+});
+
+test('EVERY suggestion reason contains a concrete figure', async () => {
+  const { analyzeRoster } = await import('../public/lib/suggest.js');
+  const mk = (id, pos, val, age, extra = {}) => ({
+    id, name: id, position: pos, value: val, age, kind: 'player',
+    sources: { fantasycalc: { normalized: val }, dynastyprocess: { normalized: val },
+               ktc: { normalized: val * (extra.ktcMult ?? 1) } },
+    ...extra,
+  });
+  const slots = ['QB', 'RB', 'RB', 'WR', 'WR', 'WR', 'TE', 'FLEX', 'BN', 'BN', 'BN', 'BN'];
+
+  // A roster engineered to trip every reason code at once.
+  const mine = [
+    mk('qb', 'QB', 8000, 27), mk('rbA', 'RB', 8000, 24), mk('rbB', 'RB', 7500, 25),
+    mk('rbC', 'RB', 7000, 26), mk('rbD', 'RB', 6500, 26), mk('rbE', 'RB', 6000, 29),
+    mk('wrA', 'WR', 7000, 25), mk('wrB', 'WR', 6500, 26), mk('wrC', 'WR', 6000, 24),
+    mk('te', 'TE', 1200, 31),
+    mk('slider', 'WR', 5000, 23, { pct365: -0.35, pct90: -0.2 }),
+    mk('pricey', 'RB', 5500, 28, { ktcMult: 1.4 }),
+  ];
+  const rivals = Array.from({ length: 11 }, (_, i) => ({
+    assets: [mk(`q${i}`, 'QB', 7000, 27), mk(`a${i}`, 'RB', 6000, 25), mk(`b${i}`, 'RB', 5800, 25),
+             mk(`c${i}`, 'WR', 6500, 25), mk(`d${i}`, 'WR', 6200, 25), mk(`e${i}`, 'WR', 6000, 25),
+             mk(`t${i}`, 'TE', 5200 + i * 40, 26),
+             mk(`cheap${i}`, 'TE', 5600, 24, { ktcMult: 0.7 })],
+  }));
+  const all = [...mine, ...rivals.flatMap((r) => r.assets)].sort((a, b) => b.value - a.value);
+  const ownerByAssetId = new Map();
+  rivals.forEach((r, i) => r.assets.forEach((a) => ownerByAssetId.set(a.id, `Team ${i + 1}`)));
+
+  const an = analyzeRoster({ myAssets: mine, rostersAssets: [{ assets: mine }, ...rivals],
+                             allAssets: all, ownerByAssetId, rosterPositions: slots });
+
+  const all_ = [...an.sells, ...an.buys];
+  assert.ok(all_.length > 0, 'the engineered roster should produce suggestions');
+  for (const x of all_) {
+    for (const r of x.reasons) {
+      assert.ok(/\d/.test(r.text),
+        `reason code "${r.code}" produced a figure-free claim: "${r.text}"`);
+      assert.ok(!/in his prime window|bottom-third at/i.test(r.text),
+        `blanket reasoning resurfaced: "${r.text}"`);
+    }
+  }
+  // Dead weight must name who is blocking, not quote a floor it no longer uses.
+  const dw = all_.flatMap((x) => x.reasons).find((r) => r.code === 'dead-weight');
+  if (dw) {
+    assert.match(dw.text, /behind \d+ better option/);
+    assert.ok(!/weakest starter is/.test(dw.text), 'the misleading floor phrasing is gone');
+  }
 });

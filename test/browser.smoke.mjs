@@ -33,6 +33,33 @@ for (const a of board.assets) {
 }
 annotateTrends(board.assets, []);
 const { rosters } = fakeLeague(board);
+// Two years of weekly history, shaped like the real DynastyProcess archive.
+const dates = [];
+for (let i = 103; i >= 0; i--) {
+  const d = new Date(Date.now() - i * 7 * 86400000);
+  dates.push(d.toISOString().slice(0, 10));
+}
+const series = {};
+for (const a of board.assets.slice(0, 200)) {
+  let v = a.value * (0.7 + Math.random() * 0.4);
+  series[a.id] = dates.map((_, i) => {
+    v += (a.value - v) * 0.06 + (Math.random() - 0.5) * a.value * 0.03;
+    // leave occasional gaps, as the real archive has
+    return i % 17 === 5 ? null : Math.round(Math.max(1, v));
+  });
+}
+const historyPayload = { dates, series, builtAt: new Date().toISOString(), snapshotCount: dates.length };
+
+// long-horizon deltas, as the pipeline bakes in
+for (const a of board.assets) {
+  const row = series[a.id];
+  if (!row) continue;
+  const first = row.find((x) => x != null), last = [...row].reverse().find((x) => x != null);
+  if (first && last) { a.delta365 = last - first; a.pct365 = Number(((last - first) / first).toFixed(4)); }
+  const q = row[row.length - 13];
+  if (q && last) { a.delta90 = last - q; a.pct90 = Number(((last - q) / q).toFixed(4)); }
+}
+
 const boardPayload = { format: 'sf-12tm-1ppr', publishedAt: new Date().toISOString(),
   sources: [{ source: 'ktc', assets: 450 }, { source: 'fantasycalc', assets: 460 }, { source: 'dynastyprocess', assets: 439 }],
   curve: board.curve, assets: board.assets };
@@ -71,6 +98,10 @@ await page.route('**/*', async (route) => {
   if (url.includes('/api/board')) {
     return route.fulfill({ status: 200, contentType: 'application/json',
       headers: { 'x-board-format': 'sf-12tm-1ppr' }, body: JSON.stringify(boardPayload) });
+  }
+  if (url.includes('/api/history')) return json(historyPayload);
+  if (url.includes('/api/analyze')) {
+    return json({ text: 'You sit 4th of 12 by total value.\n\nYour weakest slot is TE.\n\nPackage your benched RBs.', model: '@cf/meta/llama-3.1-8b-instruct' });
   }
   if (url.includes('api.sleeper.app')) {
     if (url.includes('/state/nfl')) return json({ league_season: '2026' });
@@ -158,6 +189,54 @@ const reasons = await page.locator('.reasons li').count();
 const ideas = await page.locator('.idea').count();
 console.log(`roster suggestions: ${reasons} reasons, ${ideas} trade ideas`);
 if (reasons === 0) fail('no suggestion reasoning rendered');
+
+// --- player detail modal: chart, per-source table, long-horizon trends
+await page.click('nav.tabs button[data-view="roster"]');
+await page.waitForTimeout(400);
+const slotRows = await page.locator('.card', { hasText: 'Your starting lineup' }).locator('tbody tr').count();
+if (!slotRows) fail('starting lineup table did not render');
+console.log(`starting lineup: ${slotRows} slots analysed`);
+
+await page.locator('.card', { hasText: 'Your roster' }).locator('tbody tr').first().click();
+await page.waitForSelector('.modal', { timeout: 5000 });
+await page.waitForSelector('.vchart, .modal .empty', { timeout: 8000 });
+const hasChart = await page.locator('.modal .vchart').count();
+if (!hasChart) fail('player modal rendered no history chart');
+const pathLen = await page.locator('.modal .vchart-line').getAttribute('d');
+if (!pathLen || pathLen.length < 50) fail('history chart path looks empty');
+const srcRows = await page.locator('.modal tbody tr').count();
+if (srcRows !== 3) fail(`expected 3 source rows in the modal, got ${srcRows}`);
+console.log('player modal: chart + per-source breakdown rendered');
+
+// hovering must produce a tooltip
+const chartBox = await page.locator('.modal .vchart').boundingBox();
+await page.mouse.move(chartBox.x + chartBox.width * 0.5, chartBox.y + chartBox.height * 0.5);
+await page.waitForTimeout(250);
+const tipVisible = await page.locator('.modal .chart-tip').isVisible();
+if (!tipVisible) fail('chart tooltip did not appear on hover');
+console.log('chart hover tooltip works');
+await page.screenshot({ path: path.join(shots, 'player-modal.png') });
+await page.keyboard.press('Escape');
+await page.waitForTimeout(250);
+if (await page.locator('.modal').count()) fail('Escape did not close the modal');
+
+// --- suggestion quality: every reason must carry a figure
+const reasonTexts = await page.locator('.card', { hasText: 'Suggested moves' }).locator('.reasons li').allTextContents();
+console.log(`suggestions: ${reasonTexts.length} reasons`);
+for (const t of reasonTexts) {
+  if (!/\d/.test(t)) fail(`reason has no number in it: "${t}"`);
+  if (/in his prime window|bottom-third at/i.test(t)) fail(`blanket reasoning came back: "${t}"`);
+}
+if (reasonTexts.length) console.log('  sample:', reasonTexts[0].slice(0, 110));
+
+// --- AI summary panel
+await page.locator('.card', { hasText: 'Written summary' }).getByRole('button', { name: /write a summary/i }).click();
+await page.waitForSelector('.ai-body', { timeout: 8000 });
+const aiText = await page.locator('.ai-body').textContent();
+if (!aiText || aiText.length < 20) fail('AI summary did not render');
+const aiNote = await page.locator('.ai-note').textContent();
+if (!/knows nothing about the current/i.test(aiNote)) fail('AI limitations note missing');
+console.log('AI panel rendered with its limitations disclosed');
 
 // --- multi-league switcher: the header must offer both leagues and switch cleanly
 const sel = page.locator('.league-select');

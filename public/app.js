@@ -13,6 +13,7 @@ import { evaluateTrade, packageValue } from './lib/trade.js';
 import { analyzeRoster } from './lib/suggest.js';
 import { movers } from './lib/history.js';
 import { ageStage } from './lib/agecurve.js';
+import { valueHistoryChart } from './lib/chart.js';
 
 const LS_KEY = 'dvb.settings.v1';
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -29,6 +30,7 @@ const state = {
   rosters: [], users: [], ownedPicks: null, assetsById: new Map(),
   rosterAssets: [], myRosterId: null, analysis: null,
   view: 'roster', trade: { a: [], b: [] },
+  history: null, historyLoading: false, ai: { text: null, loading: false, error: null, model: null },
 };
 
 /* ---------------------------------------------------------------- settings */
@@ -184,7 +186,95 @@ async function loadLeague() {
       rostersAssets: state.rosterAssets,
       allAssets: board.assets,
       ownerByAssetId,
+      rosterPositions: league.roster_positions || [],
     });
+  }
+}
+
+/* ---------------------------------------------------- history + detail modal */
+
+/** The weekly series is a separate, larger payload - fetched on first use. */
+async function ensureHistory() {
+  if (state.history || state.historyLoading) return state.history;
+  state.historyLoading = true;
+  try {
+    const res = await fetch(`/api/history?qb=${state.format.superflex ? 'sf' : '1qb'}`);
+    state.history = res.ok ? await res.json() : { dates: [], series: {} };
+  } catch {
+    state.history = { dates: [], series: {} };
+  } finally {
+    state.historyLoading = false;
+  }
+  return state.history;
+}
+
+function ownerOf(assetId) {
+  for (const r of state.rosterAssets) {
+    if (r.assets.some((a) => a.id === assetId)) return r;
+  }
+  return null;
+}
+
+async function openPlayer(asset) {
+  const back = el('div', { className: 'modal-back' });
+  const body = el('div', { className: 'modal' });
+  back.append(body);
+  back.onclick = (e) => { if (e.target === back) back.remove(); };
+  const onKey = (e) => { if (e.key === 'Escape') { back.remove(); document.removeEventListener('keydown', onKey); } };
+  document.addEventListener('keydown', onKey);
+  document.body.append(back);
+
+  const owner = ownerOf(asset.id);
+  const stat = (k, v, n) => el('div', { className: 'stat' },
+    el('div', { className: 'k' }, k), el('div', { className: 'v' }, v),
+    n ? el('div', { className: 'n' }, n) : null);
+
+  const trend = (label, delta, pctVal) => stat(label,
+    Number.isFinite(delta) ? `${delta > 0 ? '+' : ''}${fmt(delta)}` : '—',
+    Number.isFinite(pctVal) ? pct(pctVal) : '');
+
+  body.replaceChildren(
+    el('h3', {}, posTag(asset), asset.name,
+      el('button', { className: 'close', onclick: () => back.remove(), title: 'close' }, '×')),
+    el('div', { className: 'faint' },
+      [asset.team, asset.age ? `age ${asset.age}` : null,
+       asset.kind === 'player' ? ageStage(asset.position, asset.age) : 'draft pick',
+       owner ? `rostered by ${owner.name}` : 'free agent'].filter(Boolean).join(' · ')),
+    el('div', { className: 'kv' },
+      stat('Blended value', fmt(asset.value), `overall #${asset.overallRank} · ${asset.position}${asset.positionRank}`),
+      trend('30 days', asset.delta30, asset.pct30),
+      trend('90 days', asset.delta90, asset.pct90),
+      trend('1 year', asset.delta365, asset.pct365)),
+    el('div', { id: 'chart-slot' }, el('div', { className: 'spinner' }, 'Loading history…')),
+    el('h4', { style: 'font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);margin:16px 0 6px' },
+      'What each source says'),
+    table(['Source', { label: 'Value', num: true }, { label: 'Overall rank', num: true }],
+      ['ktc', 'fantasycalc', 'dynastyprocess'].map((src) => {
+        const v = asset.sources?.[src];
+        return el('tr', {},
+          el('td', {}, src === 'ktc' ? 'KeepTradeCut' : src === 'fantasycalc' ? 'FantasyCalc' : 'DynastyProcess'),
+          el('td', { className: 'num' }, v ? fmt(v.normalized) : '—'),
+          el('td', { className: 'num faint' }, v ? `#${v.rank}` : '—'));
+      })),
+    asset.sourceCount > 1
+      ? el('div', { className: 'faint', style: 'margin-top:8px' },
+          `Sources disagree by ${fmt(asset.valueSpread)} points (${asset.rankSpread} places).`)
+      : el('div', { className: 'badge thin', style: 'margin-top:8px' }, 'only one source prices this asset'),
+  );
+
+  const h = await ensureHistory();
+  const row = h?.series?.[asset.id];
+  const slot = body.querySelector('#chart-slot');
+  if (row && h.dates?.length) {
+    slot.replaceChildren(
+      el('h4', { style: 'font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);margin:14px 0 2px' },
+        'Value history',
+        el('span', { className: 'sub faint', style: 'text-transform:none;letter-spacing:0;margin-left:8px' },
+          'weekly, from DynastyProcess')),
+      valueHistoryChart(h.dates, row, { label: `${asset.name} value` }));
+  } else {
+    slot.replaceChildren(el('div', { className: 'empty' },
+      'No weekly history for this asset — draft picks and very deep players are not in the archive.'));
   }
 }
 
@@ -208,6 +298,11 @@ function deltaCell(a, key = 'delta30') {
   return el('td', { className: `num delta ${d > 0 ? 'up' : 'down'}` }, `${d > 0 ? '+' : ''}${fmt(d)}`);
 }
 
+/** Rows that open the player detail modal. */
+function clickableRow(asset, ...cells) {
+  return el('tr', { className: 'clickable', onclick: () => openPlayer(asset) }, ...cells);
+}
+
 function table(headers, rows) {
   return el('div', { className: 'scroll-x' }, el('table', {},
     el('thead', {}, el('tr', {}, ...headers.map((h) =>
@@ -224,104 +319,190 @@ function card(title, sub, ...body) {
 
 /* ------------------------------------------------------------- roster view */
 
+function reasonList(x) {
+  return el('ul', { className: 'reasons' }, ...x.reasons.map((r) => el('li', {}, r.text)));
+}
+
+function ideaCard(idea) {
+  const giving = idea.give;
+  return el('div', { className: 'idea' },
+    el('div', { className: 'hdr' },
+      ...giving.flatMap((g, i) => [i ? el('span', { className: 'arrow' }, ' + ') : null, posTag(g), g.name]),
+      el('span', { className: 'arrow' }, ' \u21c4 '),
+      posTag(idea.get), idea.get.name,
+      idea.withTeam ? el('span', { className: 'badge' }, `from ${idea.withTeam}`) : null,
+      idea.type === 'consolidation' ? el('span', { className: 'badge buy' }, 'consolidation') : null,
+      idea.edge === 2 ? el('span', { className: 'badge buy' }, 'both sides mispriced') : null),
+    idea.type === 'consolidation'
+      ? el('div', { style: 'margin-top:7px;font-size:12.5px;color:var(--text-dim)' }, idea.rationale)
+      : el('ul', {}, ...idea.rationale.map((r) => el('li', {}, r))),
+    el('div', { style: 'margin-top:9px' },
+      el('button', {
+        className: 'btn ghost',
+        onclick: () => { state.trade = { a: [...giving], b: [idea.get] }; switchView('trade'); },
+      }, 'Open in calculator')));
+}
+
+function aiPanel() {
+  const box = el('div', {});
+  const render = () => {
+    const { text, loading, error, model } = state.ai;
+    box.replaceChildren(
+      loading ? el('div', { className: 'spinner' }, 'Writing…')
+      : error ? el('div', { className: 'notice' }, error)
+      : text ? el('div', {},
+          el('div', { className: 'ai-body' }, text),
+          el('div', { className: 'ai-note' },
+            `Written by ${model || 'a small open model'} running on Cloudflare's free tier. It is given only `
+            + 'the numbers on this page and is instructed to add nothing else — it knows nothing about the current '
+            + 'NFL season, so it cannot tell you why a player moved. Treat it as a readable summary of the figures, '
+            + 'not as a second opinion.'))
+      : el('div', {},
+          el('div', { className: 'faint', style: 'margin-bottom:10px' },
+            'Turns the numbers above into a few paragraphs of plain English. Free, and nothing leaves Cloudflare.'),
+          el('button', { className: 'btn', onclick: run }, 'Write a summary')));
+  };
+  async function run() {
+    state.ai = { text: null, loading: true, error: null, model: null };
+    render();
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(buildFacts()),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
+      state.ai = { text: j.text, loading: false, error: null, model: j.model };
+    } catch (e) {
+      state.ai = { text: null, loading: false, error: `Could not generate a summary: ${e.message}`, model: null };
+    }
+    render();
+  }
+  render();
+  return box;
+}
+
+/**
+ * The exact facts handed to the writer model. Deliberately small and already
+ * computed — the model is not asked to analyse anything, only to phrase this.
+ */
+function buildFacts() {
+  const an = state.analysis;
+  const mine = state.rosterAssets.find((r) => r.rosterId === state.myRosterId);
+  const trim = (x) => ({ name: x.name, position: x.position, age: x.age, value: x.value,
+                         reasons: x.reasons.map((r) => r.text) });
+  return {
+    league: { name: state.league.name, teams: state.format.teams,
+              superflex: state.format.superflex, scoring: state.format.ppr === 1 ? 'PPR' : state.format.ppr === 0.5 ? 'half-PPR' : 'standard' },
+    yourTeam: {
+      record: mine?.record,
+      totalValueRank: `${an.profile.rank} of ${an.profile.of}`,
+      stance: an.profile.stance,
+      shareOfValueInYoungPlayers: pct(an.profile.youthShare),
+      startingLineupValue: an.lineup.starterValue,
+      benchValue: an.lineup.benchValue,
+    },
+    lineupSlots: an.slots.map((s) => ({
+      slot: s.slot, yourStarter: s.player?.name ?? 'EMPTY', value: s.value,
+      leagueMedianAtSlot: s.leagueMedian, rank: `${s.rank} of ${s.of}`,
+    })),
+    sellCandidates: an.sells.slice(0, 5).map(trim),
+    buyCandidates: an.buys.slice(0, 5).map(trim),
+    suggestedTrades: an.ideas.slice(0, 3).map((i) => ({
+      give: i.give.map((g) => `${g.name} (${g.value})`),
+      get: `${i.get.name} (${i.get.value})`,
+      from: i.withTeam, type: i.type,
+    })),
+  };
+}
+
 function renderRoster() {
   const mine = state.rosterAssets.find((r) => r.rosterId === state.myRosterId);
   if (!mine) return el('div', { className: 'empty' }, 'Could not identify your roster in this league.');
   const an = state.analysis;
 
-  const total = mine.assets.reduce((s, a) => s + a.value, 0);
   const stats = el('div', { className: 'grid4' },
     el('div', { className: 'stat' }, el('div', { className: 'k' }, 'Roster value'),
-      el('div', { className: 'v' }, fmt(total)),
-      el('div', { className: 'n' }, `#${an?.profile.rank ?? '—'} of ${an?.profile.of ?? '—'}`)),
+      el('div', { className: 'v' }, fmt(an.profile.totalValue)),
+      el('div', { className: 'n' }, `#${an.profile.rank} of ${an.profile.of}`)),
+    el('div', { className: 'stat' }, el('div', { className: 'k' }, 'Starting lineup'),
+      el('div', { className: 'v' }, fmt(an.lineup.starterValue)),
+      el('div', { className: 'n' }, `${fmt(an.lineup.benchValue)} sat on your bench`)),
     el('div', { className: 'stat' }, el('div', { className: 'k' }, 'Stance'),
       el('div', { className: 'v', style: 'font-size:16px' }, ({
         contend: 'Contend', rebuild: 'Rebuild', retool: 'Retool', 'contend-with-youth': 'Contend (young)',
-      })[an?.profile.stance] || '—'),
-      el('div', { className: 'n' }, `${pct(an?.profile.youthShare)} of value is future`)),
-    el('div', { className: 'stat' }, el('div', { className: 'k' }, 'Assets'),
-      el('div', { className: 'v' }, mine.assets.length),
-      el('div', { className: 'n' }, `${mine.unvalued} unvalued`)),
+      })[an.profile.stance] || '—'),
+      el('div', { className: 'n' }, `${pct(an.profile.youthShare)} of value is future`)),
     el('div', { className: 'stat' }, el('div', { className: 'k' }, 'Record'),
       el('div', { className: 'v', style: 'font-size:16px' }, mine.record),
-      el('div', { className: 'n' }, state.league.name)),
+      el('div', { className: 'n' }, `${mine.assets.length} assets · ${mine.unvalued} unvalued`)),
   );
 
-  const strengthRows = ['QB', 'RB', 'WR', 'TE'].map((p) => {
-    const s = an.strength[p];
-    return el('tr', {},
-      el('td', {}, el('span', { className: `pos ${p}` }, p)),
-      el('td', { className: 'num' }, fmt(s.total)),
-      el('td', { className: 'num faint' }, fmt(s.leagueMedian)),
-      el('td', { className: 'num' }, `${s.rank} of ${s.of}`),
-      el('td', { style: 'width:130px' }, el('div', { className: 'bar' },
-        el('i', { style: `width:${Math.max(3, s.percentile * 100)}%` }))),
-      el('td', {}, el('span', {
-        className: `badge ${s.label === 'strength' ? 'buy' : s.label === 'weakness' ? 'sell' : ''}`,
-      }, s.label)),
-    );
-  });
+  // Slot-by-slot, which is the honest version of "am I good at WR".
+  const slotRows = an.slots.map((s) => el('tr',
+    s.player ? { className: 'clickable', onclick: () => openPlayer(s.player) } : {},
+    el('td', {}, el('span', { className: `pos ${s.slot.includes('FLEX') ? 'NA' : s.slot}` }, s.slot)),
+    el('td', {}, s.player ? s.player.name : el('span', { className: 'badge sell' }, 'nobody')),
+    el('td', { className: 'num' }, fmt(s.value)),
+    el('td', { className: 'num faint' }, fmt(s.leagueMedian)),
+    el('td', { className: 'num' }, `${s.rank} of ${s.of}`),
+    el('td', { style: 'width:120px' }, el('div', { className: 'bar' },
+      el('i', { style: `width:${Math.max(3, s.percentile * 100)}%` }))),
+  ));
 
-  const rosterRows = mine.assets.map((a) => el('tr', {},
+  const sellRows = an.sells.map((a) => clickableRow(a,
+    nameCell(a, [el('span', { className: 'badge sell' }, 'sell')]),
+    el('td', { className: 'num' }, fmt(a.value)),
+    el('td', {}, reasonList(a))));
+
+  const buyRows = an.buys.map((a) => clickableRow(a,
+    nameCell(a, [el('span', { className: 'badge buy' }, 'buy')]),
+    el('td', { className: 'num' }, fmt(a.value)),
+    el('td', {}, reasonList(a))));
+
+  const rosterRows = mine.assets.map((a) => clickableRow(a,
     nameCell(a),
     el('td', { className: 'faint' }, a.team || (a.kind === 'pick' ? 'pick' : '')),
     el('td', { className: 'faint' }, a.kind === 'player' ? ageStage(a.position, a.age) : ''),
     el('td', { className: 'num' }, fmt(a.value)),
-    deltaCell(a),
+    deltaCell(a, 'delta30'),
+    deltaCell(a, 'delta365'),
     el('td', { className: 'num faint' }, a.sources?.ktc ? fmt(a.sources.ktc.normalized) : '—'),
     el('td', { className: 'num faint' }, a.sources?.fantasycalc ? fmt(a.sources.fantasycalc.normalized) : '—'),
     el('td', { className: 'num faint' }, a.sources?.dynastyprocess ? fmt(a.sources.dynastyprocess.normalized) : '—'),
   ));
 
-  const sellRows = an.sells.slice(0, 10).map((a) => el('tr', {},
-    nameCell(a, [el('span', { className: 'badge sell' }, 'sell')]),
-    el('td', { className: 'num' }, fmt(a.value)),
-    el('td', {}, el('ul', { className: 'reasons' }, ...a.reasons.map((r) => el('li', {}, r.text)))),
-  ));
-
-  const buyRows = an.buys.slice(0, 10).map((a) => el('tr', {},
-    nameCell(a, [el('span', { className: 'badge buy' }, 'buy')]),
-    el('td', { className: 'num' }, fmt(a.value)),
-    el('td', {}, el('ul', { className: 'reasons' }, ...a.reasons.map((r) => el('li', {}, r.text)))),
-  ));
-
-  const ideas = an.ideas.length
-    ? an.ideas.map((idea) => el('div', { className: 'idea' },
-        el('div', { className: 'hdr' },
-          posTag(idea.give), idea.give.name,
-          el('span', { className: 'arrow' }, ' ⇄ '),
-          posTag(idea.get), idea.get.name,
-          idea.withTeam ? el('span', { className: 'badge' }, `from ${idea.withTeam}`) : null,
-          el('span', { className: 'badge' }, `${idea.valueGap >= 0 ? '+' : ''}${fmt(idea.valueGap)} for you`),
-          idea.edge === 2 ? el('span', { className: 'badge buy' }, 'both sides mispriced') : null),
-        el('ul', {}, ...idea.rationale.map((r) => el('li', {}, r))),
-        el('div', { style: 'margin-top:8px' },
-          el('button', {
-            className: 'btn ghost', onclick: () => {
-              state.trade = { a: [idea.give], b: [idea.get] };
-              switchView('trade');
-            },
-          }, 'Open in calculator')),
-      ))
-    : [el('div', { className: 'empty' }, 'No clean one-for-one matches right now. The trade calculator handles bigger packages.')];
-
   return el('div', {},
     stats,
     el('div', { style: 'height:16px' }),
-    card('Positional strength', 'starters plus two, against the rest of the league',
-      table(['Pos', { label: 'Your value', num: true }, { label: 'League median', num: true },
-             { label: 'Rank', num: true }, 'Percentile', ''], strengthRows)),
-    card('Suggested moves', 'heuristics — the reasoning is shown so you can disagree',
+    an.usedDefaultLineup
+      ? el('div', { className: 'notice' },
+          'This league did not report its starting slots, so a standard lineup was assumed for the analysis below.')
+      : null,
+    card('Your starting lineup', 'each slot against what the rest of the league starts there',
+      table(['Slot', 'Your starter', { label: 'Value', num: true },
+             { label: 'League median', num: true }, { label: 'Rank', num: true }, ''], slotRows)),
+    card('Suggested moves', 'every reason is a computed fact about this roster, in this league',
       el('div', { className: 'grid2' },
         el('div', {}, el('h3', { style: 'font-size:12px;color:var(--text-dim);margin:0 0 6px' }, 'Consider selling'),
-          sellRows.length ? table(['Player', { label: 'Value', num: true }, 'Why'], sellRows) : el('div', { className: 'empty' }, 'Nothing flagged.')),
+          sellRows.length ? table(['Player', { label: 'Value', num: true }, 'Why'], sellRows)
+            : el('div', { className: 'empty' }, 'Nothing flagged — no trapped value, no aging cliffs, no market gaps.')),
         el('div', {}, el('h3', { style: 'font-size:12px;color:var(--text-dim);margin:0 0 6px' }, 'Consider buying'),
-          buyRows.length ? table(['Player', { label: 'Value', num: true }, 'Why'], buyRows) : el('div', { className: 'empty' }, 'Nothing flagged.')),
+          buyRows.length ? table(['Player', { label: 'Value', num: true }, 'Why'], buyRows)
+            : el('div', { className: 'empty' }, 'Nothing flagged — no slot is far enough below the league median.')),
       )),
-    card('Trade ideas', 'matched on value, ranked by how mispriced both sides are', ...ideas),
-    card('Your roster', `${mine.assets.length} valued assets`,
+    card('Trade ideas', 'consolidations first, then value-matched swaps',
+      ...(an.ideas.length ? an.ideas.map(ideaCard)
+        : [el('div', { className: 'empty' },
+            an.profile.rank <= 2
+              ? 'Nothing obvious — you have the most valuable roster in the league, so there are few upgrades to buy. '
+                + 'The trade calculator will price anything you want to test by hand.'
+              : 'No clean value-matched pairs right now. The trade calculator handles bigger packages.')])),
+    card('Written summary', 'optional', aiPanel()),
+    card('Your roster', `${mine.assets.length} valued assets · click any player for history`,
       table(['Player', 'Team', 'Stage', { label: 'Blend', num: true }, { label: '30d', num: true },
-             { label: 'KTC', num: true }, { label: 'FCalc', num: true }, { label: 'DynP', num: true }], rosterRows)),
+             { label: '1yr', num: true }, { label: 'KTC', num: true }, { label: 'FCalc', num: true },
+             { label: 'DynP', num: true }], rosterRows)),
   );
 }
 
@@ -446,7 +627,7 @@ function renderMovers() {
   const m = movers(state.board.assets, { window: 30, limit: 15 });
   const basis = state.board.assets.find((a) => a.trendBasis30)?.trendBasis30 || 'none';
 
-  const row = (a) => el('tr', {},
+  const row = (a) => clickableRow(a,
     nameCell(a), el('td', { className: 'num' }, fmt(a.value)), deltaCell(a),
     el('td', { className: 'num faint' }, a.pct30 != null ? pct(a.pct30) : '—'));
 
@@ -455,7 +636,7 @@ function renderMovers() {
   const disagree = [...state.board.assets]
     .filter((a) => a.sourceCount > 1 && a.value >= 500)
     .sort((p, q) => q.valueSpread - p.valueSpread).slice(0, 20)
-    .map((a) => el('tr', {},
+    .map((a) => clickableRow(a,
       nameCell(a),
       el('td', { className: 'num' }, fmt(a.value)),
       ...['ktc', 'fantasycalc', 'dynastyprocess'].map((s) =>
@@ -500,7 +681,7 @@ function renderBoard() {
     const rows = state.board.assets
       .filter((a) => (!q || a.name.toLowerCase().includes(q)) && (!boardFilter.pos || a.position === boardFilter.pos))
       .slice(0, 300)
-      .map((a) => el('tr', {},
+      .map((a) => clickableRow(a,
         el('td', { className: 'num faint' }, a.overallRank),
         nameCell(a),
         el('td', { className: 'faint' }, a.team || ''),

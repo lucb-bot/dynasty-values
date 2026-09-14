@@ -36,7 +36,7 @@ export function formatPick(year, round, tier) {
 export function canonicalPickName(rawName, position, teams = 12) {
   if (!rawName) return null;
   const s = String(rawName).toLowerCase().trim();
-  const isPickish = position === 'PICK' || position === 'PI' ||
+  const isPickish = position === 'PICK' || position === 'PI' || position === 'RDP' ||
     /\b(pick|round|1st|2nd|3rd|4th|5th)\b/.test(s);
   if (!isPickish) return null;
 
