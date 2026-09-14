@@ -1,7 +1,7 @@
-run:       2026-09-14T21:45:50Z
+run:       2026-09-14T21:47:52Z
 exit code: 0
 ---
-[pipeline] 2026-09-14T21:45:17.086Z  v1.0.0
+[pipeline] 2026-09-14T21:47:18.577Z  v1.0.0
 [pipeline] 30 formats to publish
 [crosswalk] fetching db_playerids.csv ...
 [crosswalk] 6388 sleeper ids, 439 ktc ids
@@ -9,22 +9,22 @@ exit code: 0
 [ktc] diagnostics:
   rows: 3
   topLevelKeys: ["playerName(3)","playerID(3)","slug(3)","position(3)","positionID(3)","team(3)","rookie(3)","age(3)","heightFeet(3)","heightInches(3)","weight(3)","seasonsExperience(3)","pickRound(3)","pickNum(3)"]
-  sampleRow: {"playerName":"Kyren Williams","playerID":1226,"slug":"kyren-williams-1226","position":"RB","positionID":2,"team":"LAR","rookie":false,"age":26,"heightFeet":5,"heightInches":9,"weight":202,"seasonsExperience":4,"pickRound":5,"pickNum":21,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"ove
+  sampleRow: {"playerName":"D'Andre Swift","playerID":639,"slug":"d-andre-swift-639","position":"RB","positionID":2,"team":"CHI","rookie":false,"age":27.7,"heightFeet":5,"heightInches":8,"weight":204,"seasonsExperience":6,"pickRound":2,"pickNum":3,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overal
   valuePathHits: {"superflexValues.value":3,"oneQBValues.value":3,"sfValues.value":0,"qbValues.value":0,"value":0,"sfValue":0}
   namePathHits: {"playerName":3,"name":0,"player":0}
-  htmlBytes: 2613536
-  usedMarker: playersArray
+  htmlBytes: 2613769
+  usedMarker: playersArray @2270562 (13305 bytes)
   usableAssets: 3
 [ktc] continuing without KTC - the blend will use the remaining sources
 [ktc] FAILED (sf): KTC yielded only 3 usable superflex assets from 3 parsed rows (minimum 50). Refusing to use a partial board.
 [ktc] diagnostics:
   rows: 3
   topLevelKeys: ["playerName(3)","playerID(3)","slug(3)","position(3)","positionID(3)","team(3)","rookie(3)","age(3)","heightFeet(3)","heightInches(3)","weight(3)","seasonsExperience(3)","pickRound(3)","pickNum(3)"]
-  sampleRow: {"playerName":"Kyle Pitts","playerID":1051,"slug":"kyle-pitts-1051","position":"TE","positionID":4,"team":"ATL","rookie":false,"age":25.9,"heightFeet":6,"heightInches":6,"weight":250,"seasonsExperience":5,"pickRound":1,"pickNum":4,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTre
+  sampleRow: {"playerName":"Tua Tagovailoa","playerID":600,"slug":"tua-tagovailoa-600","position":"QB","positionID":1,"team":"ATL","rookie":false,"age":28.5,"heightFeet":6,"heightInches":1,"weight":225,"seasonsExperience":6,"pickRound":1,"pickNum":5,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"over
   valuePathHits: {"superflexValues.value":3,"oneQBValues.value":3,"sfValues.value":0,"qbValues.value":0,"value":0,"sfValue":0}
   namePathHits: {"playerName":3,"name":0,"player":0}
-  htmlBytes: 2613704
-  usedMarker: playersArray
+  htmlBytes: 2611999
+  usedMarker: playersArray @2270562 (13633 bytes)
   usableAssets: 3
 [ktc] continuing without KTC - the blend will use the remaining sources
 
@@ -67,7 +67,7 @@ exit code: 0
   [fantasycalc] 419 assets, 3 unmatched
   [dynastyprocess] 479 assets, 2 unmatched
   [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
-  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9604 | Jahmyr Gibbs 9272 | Puka Nacua 8637
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9627 | Jahmyr Gibbs 9312 | Puka Nacua 8591
   [publish] ok - 472 assets live
 
 [format] 1qb-12tm-0ppr
@@ -81,7 +81,7 @@ exit code: 0
   [fantasycalc] 419 assets, 3 unmatched
   [dynastyprocess] 479 assets, 2 unmatched
   [blend] 472 assets from 2 sources; 406 with 30d trend; history depth 1d
-  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9602 | Jahmyr Gibbs 9269 | Puka Nacua 8656
+  [top5] Bijan Robinson 10000 | Ja'Marr Chase 10000 | Jaxon Smith-Njigba 9626 | Jahmyr Gibbs 9308 | Puka Nacua 8611
   [publish] ok - 472 assets live
 
 [format] 1qb-12tm-1ppr
