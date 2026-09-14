@@ -600,3 +600,19 @@ test('EVERY suggestion reason contains a concrete figure', async () => {
     assert.ok(!/weakest starter is/.test(dw.text), 'the misleading floor phrasing is gone');
   }
 });
+
+test('a 30-day trend prefers real archive data over a single source field', async () => {
+  const { changeOver } = await import('../pipeline/backfill-history.mjs');
+  const now = Date.parse('2026-09-14T12:00:00Z');
+  // Weekly archive: five points, the one ~30 days back is 2026-08-16.
+  const dates = ['2026-07-19', '2026-08-02', '2026-08-16', '2026-08-30', '2026-09-13'];
+  const row = [3000, 3200, 3400, 3800, 4000];
+  const d30 = changeOver(dates, row, 30, now);
+  assert.equal(d30.from, 3400, 'picks the snapshot closest to 30 days back');
+  assert.equal(d30.to, 4000);
+  assert.equal(d30.delta, 600);
+  assert.ok(d30.days >= 25 && d30.days <= 35, `labelled ${d30.days} days`);
+
+  // And it refuses to call a 3-day-old point a 30-day trend.
+  assert.equal(changeOver(['2026-09-11'], [3900], 30, now), null);
+});
