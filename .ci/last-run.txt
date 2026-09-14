@@ -1,7 +1,7 @@
-run:       2026-09-14T21:43:51Z
+run:       2026-09-14T21:45:50Z
 exit code: 0
 ---
-[pipeline] 2026-09-14T21:43:16.452Z  v1.0.0
+[pipeline] 2026-09-14T21:45:17.086Z  v1.0.0
 [pipeline] 30 formats to publish
 [crosswalk] fetching db_playerids.csv ...
 [crosswalk] 6388 sleeper ids, 439 ktc ids
@@ -9,10 +9,10 @@ exit code: 0
 [ktc] diagnostics:
   rows: 3
   topLevelKeys: ["playerName(3)","playerID(3)","slug(3)","position(3)","positionID(3)","team(3)","rookie(3)","age(3)","heightFeet(3)","heightInches(3)","weight(3)","seasonsExperience(3)","pickRound(3)","pickNum(3)"]
-  sampleRow: {"playerName":"Dak Prescott","playerID":371,"slug":"dak-prescott-371","position":"QB","positionID":1,"team":"DAL","rookie":false,"age":33.1,"heightFeet":6,"heightInches":2,"weight":238,"seasonsExperience":10,"pickRound":4,"pickNum":37,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overal
+  sampleRow: {"playerName":"Kyren Williams","playerID":1226,"slug":"kyren-williams-1226","position":"RB","positionID":2,"team":"LAR","rookie":false,"age":26,"heightFeet":5,"heightInches":9,"weight":202,"seasonsExperience":4,"pickRound":5,"pickNum":21,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"ove
   valuePathHits: {"superflexValues.value":3,"oneQBValues.value":3,"sfValues.value":0,"qbValues.value":0,"value":0,"sfValue":0}
   namePathHits: {"playerName":3,"name":0,"player":0}
-  htmlBytes: 2613219
+  htmlBytes: 2613536
   usedMarker: playersArray
   usableAssets: 3
 [ktc] continuing without KTC - the blend will use the remaining sources
@@ -20,10 +20,10 @@ exit code: 0
 [ktc] diagnostics:
   rows: 3
   topLevelKeys: ["playerName(3)","playerID(3)","slug(3)","position(3)","positionID(3)","team(3)","rookie(3)","age(3)","heightFeet(3)","heightInches(3)","weight(3)","seasonsExperience(3)","pickRound(3)","pickNum(3)"]
-  sampleRow: {"playerName":"Chigoziem Okonkwo","playerID":1320,"slug":"chigoziem-okonkwo-1320","position":"TE","positionID":4,"team":"WAS","rookie":false,"age":27,"heightFeet":6,"heightInches":3,"weight":238,"seasonsExperience":4,"pickRound":4,"pickNum":38,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":
+  sampleRow: {"playerName":"Kyle Pitts","playerID":1051,"slug":"kyle-pitts-1051","position":"TE","positionID":4,"team":"ATL","rookie":false,"age":25.9,"heightFeet":6,"heightInches":6,"weight":250,"seasonsExperience":5,"pickRound":1,"pickNum":4,"isFeatured":false,"isStartSitFeatured":false,"isTrending":false,"isDevyReturningToSchool":false,"isDevyYearDecrement":false,"oneQBValues":{"startSitValue":0,"overallTre
   valuePathHits: {"superflexValues.value":3,"oneQBValues.value":3,"sfValues.value":0,"qbValues.value":0,"value":0,"sfValue":0}
   namePathHits: {"playerName":3,"name":0,"player":0}
-  htmlBytes: 2611781
+  htmlBytes: 2613704
   usedMarker: playersArray
   usableAssets: 3
 [ktc] continuing without KTC - the blend will use the remaining sources
