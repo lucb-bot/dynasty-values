@@ -18,6 +18,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
 
@@ -56,3 +58,16 @@ jobs:
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -1)
           echo "### Deployed URL" >> "$GITHUB_STEP_SUMMARY"
           echo "$url" >> "$GITHUB_STEP_SUMMARY"
+          echo "$url" > DEPLOYED_URL.txt
+
+      # Recorded in the repo so the live URL is discoverable without digging
+      # through run logs.
+      - name: Record the deployed URL
+        run: |
+          if [ -n "$(git status --porcelain DEPLOYED_URL.txt)" ]; then
+            git config user.name  "dynasty-values bot"
+            git config user.email "noreply@github.com"
+            git add DEPLOYED_URL.txt
+            git commit -m "ci: record deployed URL [skip ci]"
+            git push
+          fi
