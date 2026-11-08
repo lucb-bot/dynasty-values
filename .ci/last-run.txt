@@ -1,12 +1,12 @@
-run:       2026-11-07T15:40:29Z
+run:       2026-11-08T15:59:18Z
 exit code: 1
 ---
-[pipeline] 2026-11-07T15:39:59.893Z  v1.0.0
+[pipeline] 2026-11-08T15:58:50.004Z  v1.0.0
 [pipeline] 30 formats to publish
 [crosswalk] fetching db_playerids.csv ...
 [crosswalk] 6419 sleeper ids, 423 ktc ids
-[ktc] 1QB: 500 assets from 500 rows (marker: #ktc-players (json script) @5417 (2363534 bytes))
-[ktc] superflex: 500 assets from 500 rows (marker: #ktc-players (json script) @5417 (2363534 bytes))
+[ktc] 1QB: 500 assets from 500 rows (marker: #ktc-players (json script) @5417 (2364504 bytes))
+[ktc] superflex: 500 assets from 500 rows (marker: #ktc-players (json script) @5417 (2364504 bytes))
 [history] 1qb:
   199 weekly snapshots upstream, 110 already stored, fetching 89
 [history] 1qb: 110 weekly points, 919 players, 2024-08-08 -> 2026-11-06
@@ -15,123 +15,123 @@ exit code: 1
 [history] sf: 110 weekly points, 944 players, 2024-08-08 -> 2026-11-06
 
 [format] 1qb-8tm-0ppr
-  [fantasycalc] 415 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Bijan Robinson 9805 | Jahmyr Gibbs 9780 | Ja'Marr Chase 9253 | Puka Nacua 8444
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-8tm-0.5ppr
-  [fantasycalc] 415 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-8tm-1ppr
-  [fantasycalc] 416 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-10tm-0ppr
-  [fantasycalc] 415 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-10tm-0.5ppr
-  [fantasycalc] 415 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-10tm-1ppr
-  [fantasycalc] 415 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-12tm-0ppr
-  [fantasycalc] 415 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-12tm-0.5ppr
-  [fantasycalc] 416 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-12tm-1ppr
-  [fantasycalc] 416 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-14tm-0ppr
-  [fantasycalc] 415 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-14tm-0.5ppr
-  [fantasycalc] 415 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
-  [publish] ok - 621 assets live
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
+  [publish] ok - 622 assets live
 
 [format] 1qb-14tm-1ppr
-  [fantasycalc] 416 assets, 3 unmatched
+  [fantasycalc] 417 assets, 2 unmatched
   [dynastyprocess] 626 assets, 5 unmatched
   [ktc] 496 assets, 4 unmatched
         unmatched sample: Matthew Hibner, CJ Daniels, Jack Strand, Le'Veon Moss
   [history] 597 assets carry long-horizon trend
-  [blend] 621 assets from 3 sources; 617 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9645 | Bijan Robinson 9533 | Ja'Marr Chase 9125 | Puka Nacua 8328
+  [blend] 622 assets from 3 sources; 618 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9538 | Bijan Robinson 9480 | Ja'Marr Chase 9075 | Puka Nacua 8291
 [pipeline] fatal: Error: publish failed 500: {"error":"KV PUT failed: 429 Too Many Requests"}
     at publish (file:///home/runner/work/dynasty-values/dynasty-values/pipeline/run.mjs:145:22)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
