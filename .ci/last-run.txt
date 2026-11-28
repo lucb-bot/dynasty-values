@@ -1,7 +1,7 @@
-run:       2026-11-27T18:59:58Z
-exit code: 1
+run:       2026-11-28T17:34:14Z
+exit code: 0
 ---
-[pipeline] 2026-11-27T18:59:34.533Z  v1.0.0
+[pipeline] 2026-11-28T17:33:23.773Z  v1.0.0
 [pipeline] 30 formats to publish
 [crosswalk] fetching db_playerids.csv ...
 [crosswalk] 6427 sleeper ids, 414 ktc ids
@@ -17,116 +17,243 @@ exit code: 1
 [history] sf: 110 weekly points, 945 players, 2024-08-23 -> 2026-11-27
 
 [format] 1qb-8tm-0ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9790 | Ja'Marr Chase 9790 | Bijan Robinson 9493 | Amon-Ra St. Brown 7964
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9841 | Ja'Marr Chase 9841 | Bijan Robinson 9568 | Amon-Ra St. Brown 8092
+  [publish] ok - 644 assets live
 
 [format] 1qb-8tm-0.5ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9746 | Ja'Marr Chase 9746 | Bijan Robinson 9417 | Amon-Ra St. Brown 7954
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9797 | Ja'Marr Chase 9797 | Bijan Robinson 9492 | Amon-Ra St. Brown 8083
+  [publish] ok - 644 assets live
 
 [format] 1qb-8tm-1ppr
   [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9721 | Ja'Marr Chase 9721 | Bijan Robinson 9389 | Amon-Ra St. Brown 7947
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9781 | Ja'Marr Chase 9781 | Bijan Robinson 9464 | Amon-Ra St. Brown 8080
+  [publish] ok - 644 assets live
 
 [format] 1qb-10tm-0ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9783 | Ja'Marr Chase 9783 | Bijan Robinson 9482 | Amon-Ra St. Brown 7962
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9835 | Ja'Marr Chase 9835 | Bijan Robinson 9557 | Amon-Ra St. Brown 8092
+  [publish] ok - 644 assets live
 
 [format] 1qb-10tm-0.5ppr
   [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9731 | Ja'Marr Chase 9731 | Bijan Robinson 9407 | Amon-Ra St. Brown 7949
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9792 | Ja'Marr Chase 9792 | Bijan Robinson 9482 | Amon-Ra St. Brown 8082
+  [publish] ok - 644 assets live
 
 [format] 1qb-10tm-1ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9724 | Ja'Marr Chase 9724 | Bijan Robinson 9378 | Amon-Ra St. Brown 7949
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9775 | Ja'Marr Chase 9775 | Bijan Robinson 9453 | Amon-Ra St. Brown 8079
+  [publish] ok - 644 assets live
 
 [format] 1qb-12tm-0ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9742 | Ja'Marr Chase 9742 | Bijan Robinson 9410 | Amon-Ra St. Brown 7953
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9792 | Ja'Marr Chase 9792 | Bijan Robinson 9484 | Amon-Ra St. Brown 8082
+  [publish] ok - 644 assets live
 
 [format] 1qb-12tm-0.5ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9698 | Ja'Marr Chase 9698 | Bijan Robinson 9333 | Amon-Ra St. Brown 7942
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9749 | Ja'Marr Chase 9749 | Bijan Robinson 9409 | Amon-Ra St. Brown 8074
+  [publish] ok - 644 assets live
 
 [format] 1qb-12tm-1ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9682 | Ja'Marr Chase 9682 | Bijan Robinson 9305 | Amon-Ra St. Brown 7939
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9732 | Ja'Marr Chase 9732 | Bijan Robinson 9380 | Amon-Ra St. Brown 8070
+  [publish] ok - 644 assets live
 
 [format] 1qb-14tm-0ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9713 | Ja'Marr Chase 9713 | Bijan Robinson 9359 | Amon-Ra St. Brown 7946
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9765 | Ja'Marr Chase 9765 | Bijan Robinson 9435 | Amon-Ra St. Brown 8077
+  [publish] ok - 644 assets live
 
 [format] 1qb-14tm-0.5ppr
-  [fantasycalc] 418 assets, 3 unmatched
+  [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9669 | Ja'Marr Chase 9669 | Bijan Robinson 9282 | Amon-Ra St. Brown 7936
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9720 | Ja'Marr Chase 9720 | Bijan Robinson 9358 | Amon-Ra St. Brown 8067
+  [publish] ok - 644 assets live
 
 [format] 1qb-14tm-1ppr
   [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9644 | Ja'Marr Chase 9644 | Bijan Robinson 9256 | Amon-Ra St. Brown 7929
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9704 | Ja'Marr Chase 9704 | Bijan Robinson 9331 | Amon-Ra St. Brown 8065
+  [publish] ok - 644 assets live
 
 [format] 1qb-16tm-0ppr
   [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9673 | Ja'Marr Chase 9673 | Bijan Robinson 9306 | Amon-Ra St. Brown 7937
-  [publish] ok - 643 assets live
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9732 | Ja'Marr Chase 9732 | Bijan Robinson 9380 | Amon-Ra St. Brown 8070
+  [publish] ok - 644 assets live
 
 [format] 1qb-16tm-0.5ppr
   [fantasycalc] 417 assets, 3 unmatched
   [dynastyprocess] 658 assets, 10 unmatched
-  [history] 617 assets carry long-horizon trend
-  [blend] 643 assets from 2 sources; 596 with 30d trend; history depth 45d
-  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9673 | Ja'Marr Chase 9673 | Bijan Robinson 9306 | Amon-Ra St. Brown 7937
-[pipeline] fatal: Error: publish failed 500: {"error":"KV PUT failed: 429 Too Many Requests"}
-    at publish (file:///home/runner/work/dynasty-values/dynasty-values/pipeline/run.mjs:145:22)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async main (file:///home/runner/work/dynasty-values/dynasty-values/pipeline/run.mjs:323:17)
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9732 | Ja'Marr Chase 9732 | Bijan Robinson 9380 | Amon-Ra St. Brown 8070
+  [publish] ok - 644 assets live
+
+[format] 1qb-16tm-1ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 658 assets, 10 unmatched
+  [history] 616 assets carry long-horizon trend
+  [blend] 644 assets from 2 sources; 597 with 30d trend; history depth 45d
+  [top5] Jaxon Smith-Njigba 10000 | Jahmyr Gibbs 9732 | Ja'Marr Chase 9732 | Bijan Robinson 9380 | Amon-Ra St. Brown 8070
+  [publish] ok - 644 assets live
+
+[format] sf-8tm-0ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9533 | Ja'Marr Chase 9317 | Jahmyr Gibbs 8951 | Joe Burrow 8613
+  [publish] ok - 658 assets live
+
+[format] sf-8tm-0.5ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9579 | Ja'Marr Chase 9359 | Jahmyr Gibbs 8941 | Joe Burrow 8612
+  [publish] ok - 658 assets live
+
+[format] sf-8tm-1ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9596 | Ja'Marr Chase 9392 | Jahmyr Gibbs 8954 | Joe Burrow 8611
+  [publish] ok - 658 assets live
+
+[format] sf-10tm-0ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9544 | Ja'Marr Chase 9269 | Jahmyr Gibbs 8898 | Joe Burrow 8611
+  [publish] ok - 658 assets live
+
+[format] sf-10tm-0.5ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9587 | Ja'Marr Chase 9309 | Jahmyr Gibbs 8886 | Joe Burrow 8608
+  [publish] ok - 658 assets live
+
+[format] sf-10tm-1ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9604 | Ja'Marr Chase 9374 | Jahmyr Gibbs 8899 | Joe Burrow 8609
+  [publish] ok - 658 assets live
+
+[format] sf-12tm-0ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9588 | Ja'Marr Chase 9251 | Jahmyr Gibbs 8832 | Joe Burrow 8606
+  [publish] ok - 658 assets live
+
+[format] sf-12tm-0.5ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9634 | Ja'Marr Chase 9323 | Jahmyr Gibbs 8822 | Joe Burrow 8628
+  [publish] ok - 658 assets live
+
+[format] sf-12tm-1ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9650 | Ja'Marr Chase 9355 | Jahmyr Gibbs 8834 | Joe Burrow 8642
+  [publish] ok - 658 assets live
+
+[format] sf-14tm-0ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9617 | Ja'Marr Chase 9320 | Jahmyr Gibbs 8836 | Joe Burrow 8616
+  [publish] ok - 658 assets live
+
+[format] sf-14tm-0.5ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9663 | Ja'Marr Chase 9361 | Jahmyr Gibbs 8825 | Joe Burrow 8652
+  [publish] ok - 658 assets live
+
+[format] sf-14tm-1ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9680 | Ja'Marr Chase 9394 | Jahmyr Gibbs 8838 | Joe Burrow 8666
+  [publish] ok - 658 assets live
+
+[format] sf-16tm-0ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9650 | Ja'Marr Chase 9355 | Jahmyr Gibbs 8834 | Joe Burrow 8642
+  [publish] ok - 658 assets live
+
+[format] sf-16tm-0.5ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9650 | Ja'Marr Chase 9355 | Jahmyr Gibbs 8834 | Joe Burrow 8642
+  [publish] ok - 658 assets live
+
+[format] sf-16tm-1ppr
+  [fantasycalc] 417 assets, 3 unmatched
+  [dynastyprocess] 672 assets, 11 unmatched
+  [history] 630 assets carry long-horizon trend
+  [blend] 658 assets from 2 sources; 609 with 30d trend; history depth 45d
+  [top5] Josh Allen 10000 | Jaxon Smith-Njigba 9650 | Ja'Marr Chase 9355 | Jahmyr Gibbs 8834 | Joe Burrow 8642
+  [publish] ok - 658 assets live
+
+[pipeline] done. published: 1qb-8tm-0ppr, 1qb-8tm-0.5ppr, 1qb-8tm-1ppr, 1qb-10tm-0ppr, 1qb-10tm-0.5ppr, 1qb-10tm-1ppr, 1qb-12tm-0ppr, 1qb-12tm-0.5ppr, 1qb-12tm-1ppr, 1qb-14tm-0ppr, 1qb-14tm-0.5ppr, 1qb-14tm-1ppr, 1qb-16tm-0ppr, 1qb-16tm-0.5ppr, 1qb-16tm-1ppr, sf-8tm-0ppr, sf-8tm-0.5ppr, sf-8tm-1ppr, sf-10tm-0ppr, sf-10tm-0.5ppr, sf-10tm-1ppr, sf-12tm-0ppr, sf-12tm-0.5ppr, sf-12tm-1ppr, sf-14tm-0ppr, sf-14tm-0.5ppr, sf-14tm-1ppr, sf-16tm-0ppr, sf-16tm-0.5ppr, sf-16tm-1ppr
